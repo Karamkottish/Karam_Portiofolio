@@ -18,6 +18,11 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Karam Kottish | Product Manager & Full Stack Developer",
   description: "Portfolio of Karam Kottish, a Product Manager and Full Stack Developer.",
+  icons: {
+    icon: "/images/karam-logo.png",
+    shortcut: "/images/karam-logo.png",
+    apple: "/images/karam-logo.png",
+  },
 };
 
 export default function RootLayout({

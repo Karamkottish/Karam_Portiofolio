@@ -41,7 +41,7 @@ export function Navbar() {
                     <div className="shrink-0">
 
                         <Link href="/" className="text-2xl font-bold font-mono tracking-tighter hover:text-primary/80 transition-colors">
-                            KK.
+                            Karam K
                         </Link>
                     </div>
 
