@@ -36,12 +36,12 @@ const socialLinks = [
     },
     {
         name: "Email",
-        value: "ramosq16@gmail.com",
+        value: "karamkottish@gmail.com",
         label: "Copy Email",
         icon: Mail,
         color: "hover:bg-blue-500/10 hover:text-blue-500 hover:border-blue-500/20",
         action: () => {
-            navigator.clipboard.writeText("ramosq16@gmail.com")
+            navigator.clipboard.writeText("karamkottish@gmail.com")
             alert("Email copied to clipboard!")
         }
     },
