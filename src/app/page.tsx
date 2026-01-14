@@ -3,6 +3,7 @@ import { Experience } from "@/components/sections/Experience";
 import { Skills } from "@/components/sections/Skills";
 import { Projects } from "@/components/sections/Projects";
 import { Courses } from "@/components/sections/Courses";
+import { Education } from "@/components/sections/Education";
 
 export default function Home() {
   return (
@@ -17,13 +18,10 @@ export default function Home() {
 
       <Courses />
 
+      <Education />
 
-      <section id="diploma" className="min-h-screen py-20 px-4 flex items-center justify-center">
-        <h2 className="text-4xl font-bold opacity-20">Diploma Section (Coming Soon)</h2>
-      </section>
-
-      <section id="education" className="min-h-screen py-20 px-4 flex items-center justify-center bg-secondary/20">
-        <h2 className="text-4xl font-bold opacity-20">Education Section (Coming Soon)</h2>
+      <section id="contact" className="py-20 px-4 flex items-center justify-center">
+        <h2 className="text-4xl font-bold opacity-20">Contact Section (Coming Soon)</h2>
       </section>
     </div>
   );
