@@ -1,5 +1,7 @@
 import { Hero } from "@/components/sections/Hero";
 import { Experience } from "@/components/sections/Experience";
+import { Skills } from "@/components/sections/Skills";
+import { Projects } from "@/components/sections/Projects";
 
 export default function Home() {
   return (
@@ -8,10 +10,9 @@ export default function Home() {
 
       <Experience />
 
-      {/* Placeholders for future sections to allow scrolling */}
-      <section id="projects" className="min-h-screen py-20 px-4 flex items-center justify-center">
-        <h2 className="text-4xl font-bold opacity-20">Projects Section (Coming Soon)</h2>
-      </section>
+      <Skills />
+
+      <Projects />
 
       <section id="courses" className="min-h-screen py-20 px-4 flex items-center justify-center bg-secondary/20">
         <h2 className="text-4xl font-bold opacity-20">Courses Section (Coming Soon)</h2>
