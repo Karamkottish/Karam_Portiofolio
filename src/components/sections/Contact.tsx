@@ -46,7 +46,7 @@ export function Contact() {
                     from_name: form.name,
                     to_name: "Karam",
                     from_email: form.email,
-                    to_email: "ramosq16@gmail.com", // Your email (from screenshot)
+                    to_email: "karamkottish@gmail.com", // Your email (from screenshot)
                     reply_to: form.email,
                     message: form.message,
                 },
