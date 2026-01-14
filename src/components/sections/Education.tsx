@@ -43,16 +43,26 @@ function EducationCard({ item, index }: { item: EducationItem, index: number }) 
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.6, delay: index * 0.2, type: "spring" }}
             className={cn(
-                "relative flex items-center gap-8 mb-16 last:mb-0",
-                isEven ? "flex-row" : "flex-row-reverse"
+                "relative flex items-center gap-4 md:gap-8 mb-12 md:mb-16 last:mb-0",
+                // Mobile: always left-aligned, Desktop: alternating
+                "flex-row md:flex-row",
+                !isEven && "md:flex-row-reverse"
             )}
         >
-            {/* Center Node on Timeline */}
-            <div className="absolute left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-white z-20 border-4 border-background shadow-[0_0_20px_rgba(255,255,255,0.5)]" />
+            {/* Center Node on Timeline - hidden on mobile */}
+            <div className="hidden md:block absolute left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-white z-20 border-4 border-background shadow-[0_0_20px_rgba(255,255,255,0.5)]" />
+
+            {/* Mobile timeline dot - shown only on mobile */}
+            <div className="md:hidden flex-shrink-0 w-3 h-3 rounded-full bg-white z-20 border-2 border-background shadow-[0_0_15px_rgba(255,255,255,0.5)]" />
 
             {/* Content Card */}
-            <div className={cn("w-[calc(50%-2rem)]", isEven ? "text-right" : "text-left")}>
-                <div className="group relative overflow-hidden rounded-2xl bg-white/5 dark:bg-zinc-900/60 backdrop-blur-md border border-white/10 p-6 hover:bg-white/10 transition-all duration-300 hover:shadow-2xl hover:shadow-purple-500/10 hover:-translate-y-1">
+            <div className={cn(
+                "flex-1 md:w-[calc(50%-2rem)]",
+                // Mobile: always left-aligned, Desktop: alternating alignment
+                "text-left md:text-left",
+                isEven ? "md:text-right" : "md:text-left"
+            )}>
+                <div className="group relative overflow-hidden rounded-2xl bg-white/5 dark:bg-zinc-900/60 backdrop-blur-md border border-white/10 p-4 md:p-6 hover:bg-white/10 transition-all duration-300 hover:shadow-2xl hover:shadow-purple-500/10 hover:-translate-y-1">
 
                     {/* Glowing Border Gradient */}
                     <div className={cn(
@@ -60,18 +70,28 @@ function EducationCard({ item, index }: { item: EducationItem, index: number }) 
                         item.color
                     )} />
 
-                    <div className={cn("flex items-center gap-4 mb-3", isEven ? "flex-row-reverse" : "flex-row")}>
-                        <div className={cn("p-2 rounded-lg bg-gradient-to-br text-white shadow-lg", item.color)}>
-                            {index === 0 ? <GraduationCap className="w-5 h-5" /> : <School className="w-5 h-5" />}
+                    <div className={cn(
+                        "flex items-center gap-3 md:gap-4 mb-3",
+                        // Mobile: always left-to-right, Desktop: alternating
+                        "flex-row",
+                        isEven ? "md:flex-row-reverse" : "md:flex-row"
+                    )}>
+                        <div className={cn("p-2 rounded-lg bg-gradient-to-br text-white shadow-lg flex-shrink-0", item.color)}>
+                            {index === 0 ? <GraduationCap className="w-4 h-4 md:w-5 md:h-5" /> : <School className="w-4 h-4 md:w-5 md:h-5" />}
                         </div>
-                        <h3 className="text-xl font-bold leading-tight">{item.school}</h3>
+                        <h3 className="text-base md:text-xl font-bold leading-tight">{item.school}</h3>
                     </div>
 
-                    <p className="text-muted-foreground font-medium mb-3 text-sm md:text-base">
+                    <p className="text-muted-foreground font-medium mb-3 text-xs md:text-sm lg:text-base">
                         {item.degree}
                     </p>
 
-                    <div className={cn("flex items-center gap-3 text-xs text-muted-foreground/80 mb-4", isEven ? "justify-end" : "justify-start")}>
+                    <div className={cn(
+                        "flex flex-wrap items-center gap-2 md:gap-3 text-xs text-muted-foreground/80 mb-3 md:mb-4",
+                        // Mobile: always left, Desktop: alternating
+                        "justify-start",
+                        isEven ? "md:justify-end" : "md:justify-start"
+                    )}>
                         <span className="flex items-center gap-1 bg-white/5 px-2 py-1 rounded-full border border-white/5">
                             <Calendar className="w-3 h-3" /> {item.years}
                         </span>
@@ -81,7 +101,12 @@ function EducationCard({ item, index }: { item: EducationItem, index: number }) 
                     </div>
 
                     {item.skills && (
-                        <div className={cn("flex flex-wrap gap-2", isEven ? "justify-end" : "justify-start")}>
+                        <div className={cn(
+                            "flex flex-wrap gap-2",
+                            // Mobile: always left, Desktop: alternating
+                            "justify-start",
+                            isEven ? "md:justify-end" : "md:justify-start"
+                        )}>
                             <div className="flex items-center gap-1 text-xs font-semibold text-primary">
                                 <Award className="w-3 h-3" />
                                 <span>{item.skills}</span>
@@ -91,8 +116,8 @@ function EducationCard({ item, index }: { item: EducationItem, index: number }) 
                 </div>
             </div>
 
-            {/* Spacer for the other side */}
-            <div className="w-[calc(50%-2rem)]" />
+            {/* Spacer for the other side - only on desktop */}
+            <div className="hidden md:block md:w-[calc(50%-2rem)]" />
         </motion.div>
     )
 }
