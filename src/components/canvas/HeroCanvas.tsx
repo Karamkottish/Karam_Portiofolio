@@ -12,8 +12,18 @@ function AnimatedSphere({ isDark }: { isDark: boolean }) {
     useFrame((state, delta) => {
         if (materialRef.current) {
             // Smoothly transition colors and properties
-            const targetColor = new THREE.Color(isDark ? "#818cf8" : "#4338ca")
-            const targetEmissive = new THREE.Color(isDark ? "#312e81" : "#000000")
+            let targetColor;
+            let targetEmissive;
+
+            if (isDark) {
+                targetColor = new THREE.Color("#818cf8")
+                targetEmissive = new THREE.Color("#312e81")
+            } else {
+                // Rainbow animation in light mode
+                const time = state.clock.elapsedTime
+                targetColor = new THREE.Color().setHSL((time * 0.1) % 1, 0.8, 0.6)
+                targetEmissive = new THREE.Color().setHSL((time * 0.1) % 1, 0.8, 0.2)
+            }
 
             materialRef.current.color.lerp(targetColor, delta * 2)
             materialRef.current.emissive.lerp(targetEmissive, delta * 2)
@@ -21,12 +31,12 @@ function AnimatedSphere({ isDark }: { isDark: boolean }) {
             // Smoothly transition numbers
             materialRef.current.metalness = THREE.MathUtils.lerp(
                 materialRef.current.metalness,
-                isDark ? 0.3 : 1,
+                isDark ? 0.3 : 0.1, // Less metal in light mode for more popping color
                 delta * 2
             )
             materialRef.current.emissiveIntensity = THREE.MathUtils.lerp(
                 materialRef.current.emissiveIntensity,
-                isDark ? 0.5 : 0,
+                isDark ? 0.5 : 0.8, // Brighter in light mode
                 delta * 2
             )
 
