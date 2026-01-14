@@ -66,18 +66,18 @@ export function Footer() {
 
                     {/* Brand Section */}
                     <div className="space-y-6 text-center lg:text-left">
-                        <motion.h2
+                        <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
-                            className="text-3xl md:text-5xl font-black tracking-tight"
+                            className="flex justify-center lg:justify-start"
                         >
-                            <span className="bg-clip-text text-transparent bg-linear-to-r from-foreground to-foreground/50">
-                                Karam Hesham
-                            </span>
-                            <br />
-                            <span className="text-secondary/80">Karam Kottish</span>
-                        </motion.h2>
+                            <img
+                                src="/Karam_Portiofolio/images/karam-logo.png"
+                                alt="Karam Kottish Logo"
+                                className="h-16 md:h-20 w-auto object-contain"
+                            />
+                        </motion.div>
 
                         <p className="text-muted-foreground text-lg max-w-md mx-auto lg:mx-0">
                             Building the future with code, creativity, and a touch of 3D magic. Based in Riyadh, Saudi Arabia.

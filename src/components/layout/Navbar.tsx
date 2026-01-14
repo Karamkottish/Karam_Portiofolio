@@ -40,8 +40,12 @@ export function Navbar() {
                 <div className="flex items-center justify-between h-16">
                     <div className="shrink-0">
 
-                        <Link href="/" className="text-2xl font-bold font-mono tracking-tighter hover:text-primary/80 transition-colors">
-                            Karam K
+                        <Link href="/" className="hover:opacity-80 transition-opacity">
+                            <img
+                                src="/Karam_Portiofolio/images/karam-logo.png"
+                                alt="Karam Kottish Logo"
+                                className="h-8 md:h-10 w-auto object-contain"
+                            />
                         </Link>
                     </div>
 
