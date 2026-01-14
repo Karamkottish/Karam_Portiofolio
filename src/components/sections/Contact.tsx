@@ -32,7 +32,7 @@ export function Contact() {
 
         // REPLACE THESE WITH YOUR ACTUAL EMAILJS SERVICE ID, TEMPLATE ID, AND PUBLIC KEY
         // Sign up at https://www.emailjs.com/
-        const SERVICE_ID = "service_tnws23c" // e.g., service_gmail
+        const SERVICE_ID = "service_q8445zo" // e.g., service_gmail
         const TEMPLATE_ID = "template_g7uvlqs" // e.g., template_portfolio
         const PUBLIC_KEY = "gXXUWOBgsONuJeMtt"   // e.g., user_12345abcde
 
