@@ -39,9 +39,29 @@ export function Hero() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.6 }}
                 >
-                    <p className="text-xl md:text-3xl text-muted-foreground font-light max-w-2xl mx-auto mb-10">
-                        Product Manager & Full Stack Developer
-                    </p>
+                    <div className="text-xl md:text-2xl text-muted-foreground font-light max-w-3xl mx-auto mb-12 space-y-6">
+                        <p>
+                            Product Manager & Full Stack Developer with <span className="text-foreground font-semibold border-b-2 border-primary/20">3+ years</span> of experience.
+                        </p>
+                        <p className="text-base md:text-lg opacity-90 max-w-2xl mx-auto leading-relaxed">
+                            Specializing in translating business requirements into user-centric digital products.
+                            I lead cross-functional teams to drive roadmap execution using high-performance tech:
+                        </p>
+
+                        <div className="flex flex-wrap justify-center gap-3 pt-2">
+                            {["Flutter", "React Native", "PHP", "FastAPI", "Next Js", "Three Js", "React Js"].map((tech, i) => (
+                                <motion.span
+                                    key={tech}
+                                    initial={{ opacity: 0, scale: 0.8, y: 10 }}
+                                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                                    transition={{ delay: 0.8 + (i * 0.1), type: "spring" }}
+                                    className="px-4 py-1.5 rounded-full bg-linear-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 text-foreground font-medium text-sm hover:scale-105 hover:border-blue-500/40 hover:from-blue-500/20 hover:to-purple-500/20 transition-all cursor-default shadow-[0_0_15px_-3px_rgba(59,130,246,0.1)] hover:shadow-[0_0_20px_-3px_rgba(59,130,246,0.3)]"
+                                >
+                                    {tech}
+                                </motion.span>
+                            ))}
+                        </div>
+                    </div>
                 </motion.div>
 
                 <motion.div
