@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Karam Kottish | 3D Interactive Portfolio
 
-## Getting Started
+![Portfolio Preview](/public/images/karam-logo.png)
 
-First, run the development server:
+A cutting-edge, 3D interactive portfolio website built with **Next.js**, **Three.js**, and **Tailwind CSS**. Designed to showcase my work as a **Product Manager & Full Stack Developer** with a modern, "2027 trendy" aesthetic.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🚀 Live Demo
+[View Live Portfolio](https://karamkottish.github.io/Karam_Portiofolio/)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## ✨ Features
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+-   **3D Hero Section**: Interactive particle globe and dynamic "blob" that changes behavior based on theme.
+-   **Immersive Animations**: Smooth scroll reveals, hover effects, and staggered entrances using `framer-motion`.
+-   **Dynamic Theme**: Fully supported **Dark/Light mode** with 3D elements adapting in real-time.
+-   **Interactive Contact Form**: Serverless email integration via **EmailJS** with custom 3D backgrounds.
+-   **Responsive Design**: Mobile-first architecture ensuring perfect rendering on all devices.
+-   **Tech Stack Visualization**: Animated "Tech Pills" showcasing skills like Flutter, React Native, PHP, and FastAPI.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🛠️ Tech Stack
 
-## Learn More
+-   **Framework**: [Next.js 15](https://nextjs.org/) (App Router)
+-   **Language**: [TypeScript](https://www.typescriptlang.org/)
+-   **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
+-   **3D Graphics**: [Three.js](https://threejs.org/) & [React Three Fiber](https://docs.pmnd.rs/react-three-fiber)
+-   **Animations**: [Framer Motion](https://www.framer.com/motion/)
+-   **Icons**: [Lucide React](https://lucide.dev/)
+-   **Email**: [EmailJS](https://www.emailjs.com/)
 
-To learn more about Next.js, take a look at the following resources:
+## 📦 Getting Started
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1.  **Clone the repository**
+    ```bash
+    git clone https://github.com/Karamkottish/Karam_Portiofolio.git
+    cd Karam_Portiofolio
+    ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+2.  **Install dependencies**
+    ```bash
+    npm install
+    ```
 
-## Deploy on Vercel
+3.  **Run development server**
+    ```bash
+    npm run dev
+    ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+4.  **Open in browser**
+    Navigate to `http://localhost:3000`
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🚀 Deployment
+
+This project is configured for **GitHub Pages** static deployment via GitHub Actions.
+
+-   **Base Path**: `/Karam_Portiofolio`
+-   **Build Output**: `out/` directory (Static Export)
+
+## 📬 Contact
+
+-   **Email**: karamkottish@gmail.com
+-   **Phone**: +966 59 773 3571
+-   **LinkedIn**: [Karam Kottish](https://www.linkedin.com/in/karam-kottish/)
+
+---
+© 2027 Karam Kottish. Built with ❤️ and Next.js.
