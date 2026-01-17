@@ -20,6 +20,11 @@ export function Navbar() {
     const { theme, setTheme } = useTheme()
     const [isOpen, setIsOpen] = React.useState(false)
     const [scrolled, setScrolled] = React.useState(false)
+    const [mounted, setMounted] = React.useState(false)
+
+    React.useEffect(() => {
+        setMounted(true)
+    }, [])
 
     React.useEffect(() => {
         const handleScroll = () => {
@@ -92,9 +97,9 @@ export function Navbar() {
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: "auto" }}
                         exit={{ opacity: 0, height: 0 }}
-                        className="md:hidden bg-background/95 backdrop-blur-xl border-b border-border/40"
+                        className="md:hidden bg-background/95 backdrop-blur-xl border-b border-border/40 overflow-hidden"
                     >
-                        <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                        <div className="px-2 pt-2 pb-6 space-y-1 sm:px-3">
                             {navLinks.map((link) => (
                                 <Link
                                     key={link.name}
@@ -105,15 +110,37 @@ export function Navbar() {
                                     {link.name}
                                 </Link>
                             ))}
-                            <button
-                                onClick={() => {
-                                    setTheme(theme === "dark" ? "light" : "dark")
-                                    setIsOpen(false)
-                                }}
-                                className="w-full text-left flex items-center px-3 py-2 rounded-md text-base font-medium hover:bg-accent hover:text-accent-foreground"
-                            >
-                                Toggle Theme
-                            </button>
+
+                            <div className="mt-4 px-3 py-2 border-t border-border/10 flex items-center justify-between">
+                                <span className="font-medium text-foreground/80">Appearance</span>
+                                {mounted && (
+                                    <div
+                                        className={cn(
+                                            "w-16 h-8 rounded-full p-1 cursor-pointer transition-colors duration-500 relative bg-muted",
+                                            theme === "dark" ? "bg-slate-950 ring-1 ring-slate-800" : "bg-sky-200 ring-1 ring-sky-300"
+                                        )}
+                                        onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                                    >
+                                        <motion.div
+                                            className={cn(
+                                                "w-6 h-6 rounded-full shadow-sm flex items-center justify-center absolute top-1",
+                                                theme === "dark" ? "bg-slate-800 text-sky-200" : "bg-white text-yellow-500"
+                                            )}
+                                            animate={{
+                                                x: theme === "dark" ? 32 : 0,
+                                                rotate: theme === "dark" ? 360 : 0
+                                            }}
+                                            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                                        >
+                                            {theme === "dark" ? (
+                                                <Moon className="w-4 h-4" />
+                                            ) : (
+                                                <Sun className="w-4 h-4" fill="currentColor" />
+                                            )}
+                                        </motion.div>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </motion.div>
                 )}
