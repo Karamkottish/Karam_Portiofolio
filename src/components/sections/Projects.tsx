@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react"
 import { motion, useMotionTemplate, useMotionValue } from "framer-motion"
-import { Github, ExternalLink, Folders, Smartphone, Globe, MessageSquare } from "lucide-react"
+import { Github, ExternalLink, Folders, Smartphone, Globe, MessageSquare, Leaf } from "lucide-react"
 import ProjectCanvas from "@/components/canvas/ProjectCanvas"
 import { cn } from "@/lib/utils"
 
@@ -18,6 +18,16 @@ type Project = {
 }
 
 const projects: Project[] = [
+    {
+        title: "BustaniPlus",
+        role: "React Native Developer",
+        year: "2025",
+        description: "Reimagining agritourism with a scalable mobile platform that connects farms to visitors. Features seamless booking for tours and cultural experiences, driving sustainable tourism and economic growth in alignment with Vision 2030.",
+        tags: ["React Native", "Tailwind CSS", "AgriTech", "Sustainable Tourism", "Vision 2030"],
+        icon: <Leaf className="w-10 h-10" />,
+        color: "from-green-600 to-emerald-600",
+        github: "https://github.com/Karamkottish/BustaniPlus"
+    },
     {
         title: "Karam University",
         role: "Solo React Native Developer",
