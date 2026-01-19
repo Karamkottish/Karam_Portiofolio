@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion"
 import HeroCanvas from "@/components/canvas/HeroCanvas"
-import { ArrowDown } from "lucide-react"
+import { ArrowDown, Download } from "lucide-react"
 
 export function Hero() {
     return (
@@ -77,10 +77,15 @@ export function Hero() {
                         View Work
                     </a>
                     <a
-                        href="#experience"
-                        className="px-8 py-4 rounded-full border border-foreground/20 bg-background/50 backdrop-blur-sm text-foreground font-bold hover:bg-background hover:scale-105 transition-all"
+                        href="/Karam_Portiofolio/Cv/CV9.pdf"
+                        download="Karam_Kottish_CV.pdf"
+                        className="group relative px-8 py-4 rounded-full border border-foreground/10 bg-background/30 backdrop-blur-md overflow-hidden transition-all duration-300 hover:scale-105 hover:border-foreground/20 hover:shadow-[0_0_40px_-10px_rgba(59,130,246,0.5)] dark:hover:shadow-[0_0_40px_-10px_rgba(59,130,246,0.3)]"
                     >
-                        Contact Me
+                        <div className="absolute inset-0 bg-linear-to-r from-blue-500/10 via-purple-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                        <span className="relative flex items-center gap-2 text-foreground font-bold tracking-wide">
+                            <Download className="w-5 h-5 group-hover:animate-bounce" />
+                            DOWNLOAD CV
+                        </span>
                     </a>
                 </motion.div>
             </div>
