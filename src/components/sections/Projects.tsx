@@ -20,7 +20,7 @@ import { MdOutlineCleanHands, MdArchitecture, MdLanguage } from "react-icons/md"
 
 type TechItem = {
     name: string
-    icon: React.ElementType
+    icon: React.ComponentType<any>
 }
 
 type Project = {
@@ -87,8 +87,8 @@ const projects: Project[] = [
         techStack: [
             { name: "React Native", icon: FaReact },
             { name: "Tailwind CSS", icon: SiTailwindcss },
-            { name: "AgriTech", icon: Leaf },
-            { name: "Vision 2030", icon: Globe }
+            { name: "AgriTech", icon: Leaf as React.ComponentType<any> },
+            { name: "Vision 2030", icon: Globe as React.ComponentType<any> }
         ],
         icon: <Leaf className="w-10 h-10" />,
         color: "from-green-600 to-emerald-600",
@@ -133,7 +133,7 @@ const projects: Project[] = [
         techStack: [
             { name: "React.js", icon: FaReact },
             { name: "JavaScript", icon: SiJavascript },
-            { name: "Responsive", icon: Smartphone },
+            { name: "Responsive", icon: Smartphone as React.ComponentType<any> },
             { name: "Clean UI", icon: MdOutlineCleanHands }
         ],
         icon: <Globe className="w-10 h-10" />,
@@ -193,7 +193,7 @@ const projects: Project[] = [
         techStack: [
             { name: "Stripe", icon: FaStripe },
             { name: "Firebase", icon: SiFirebase },
-            { name: "Responsive", icon: Smartphone }
+            { name: "Responsive", icon: Smartphone as React.ComponentType<any> }
         ],
         icon: <Smartphone className="w-10 h-10" />,
         color: "from-teal-500 to-emerald-500",
@@ -291,16 +291,19 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
                     </p>
 
                     <div className="flex flex-wrap gap-3 mt-auto">
-                        {project.techStack.map((tech, idx) => (
-                            <div key={idx} className="group/icon relative">
-                                <div className="p-2 rounded-xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 text-muted-foreground hover:text-foreground hover:bg-black/10 dark:hover:bg-white/10 transition-colors cursor-help">
-                                    <tech.icon className="w-5 h-5" />
+                        {project.techStack.map((tech, idx) => {
+                            const Icon = tech.icon
+                            return (
+                                <div key={idx} className="group/icon relative">
+                                    <div className="p-2 rounded-xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 text-muted-foreground hover:text-foreground hover:bg-black/10 dark:hover:bg-white/10 transition-colors cursor-help">
+                                        <Icon className="w-5 h-5" />
+                                    </div>
+                                    <span className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-black dark:bg-white text-white dark:text-black text-xs rounded opacity-0 group-hover/icon:opacity-100 transition-opacity pointer-events-none whitespace-nowrap font-bold">
+                                        {tech.name}
+                                    </span>
                                 </div>
-                                <span className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-black dark:bg-white text-white dark:text-black text-xs rounded opacity-0 group-hover/icon:opacity-100 transition-opacity pointer-events-none whitespace-nowrap font-bold">
-                                    {tech.name}
-                                </span>
-                            </div>
-                        ))}
+                            )
+                        })}
                     </div>
                 </div>
             </div>
