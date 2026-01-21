@@ -6,15 +6,60 @@ import { Github, ExternalLink, Folders, Smartphone, Globe, MessageSquare, Leaf, 
 import ProjectCanvas from "@/components/canvas/ProjectCanvas"
 import { cn } from "@/lib/utils"
 
+// Icons
+import {
+    FaReact, FaPhp, FaAws, FaGithub, FaStripe, FaPython
+} from "react-icons/fa"
+import {
+    SiTailwindcss, SiThreedotjs, SiVite, SiFirebase, SiFlutter,
+    SiFastapi, SiMysql, SiSqlite, SiDjango, SiOpencv,
+    SiJavascript, SiTypescript, SiNasa
+} from "react-icons/si"
+import { TbBrandNextjs, TbApi, TbDatabase, TbWorld } from "react-icons/tb"
+import { MdOutlineCleanHands, MdArchitecture, MdLanguage } from "react-icons/md"
+
+type TechItem = {
+    name: string
+    icon: React.ElementType
+}
+
 type Project = {
     title: string
     role: string
     year: string
     description: string
-    tags: string[]
+    techStack: TechItem[]
     icon: React.ReactNode
     color: string // For accent gradients
     github?: string
+}
+
+// Icon Mapping Helper
+const Icons = {
+    React: FaReact,
+    Tailwind: SiTailwindcss,
+    ThreeJS: SiThreedotjs,
+    Vite: SiVite,
+    NASA: SiNasa,
+    Physics: MdOutlineCleanHands, // Placeholder for Physics
+    Firebase: SiFirebase,
+    Flutter: SiFlutter,
+    FastAPI: SiFastapi,
+    AWS: FaAws,
+    GitHub: FaGithub,
+    PHP: FaPhp,
+    MySQL: SiMysql,
+    SQLite: SiSqlite,
+    Django: SiDjango,
+    Stripe: FaStripe,
+    Python: FaPython,
+    JS: SiJavascript,
+    TS: SiTypescript,
+    CleanArch: MdArchitecture,
+    Web: TbWorld,
+    Database: TbDatabase,
+    API: TbApi,
+    Lang: MdLanguage
 }
 
 const projects: Project[] = [
@@ -23,7 +68,13 @@ const projects: Project[] = [
         role: "Frontend Developer",
         year: "2026",
         description: "A high-fidelity, scroll-driven 3D simulation of the solar system. Features cinematic transitions, real-time NASA data integration, and scientifically accurate Keplerian orbital mechanics.",
-        tags: ["Three.js", "WebGL", "Vite", "NASA API", "Physics"],
+        techStack: [
+            { name: "Three.js", icon: SiThreedotjs },
+            { name: "React", icon: FaReact },
+            { name: "Vite", icon: SiVite },
+            { name: "NASA API", icon: SiNasa },
+            { name: "Physics", icon: MdArchitecture }
+        ],
         icon: <Rocket className="w-10 h-10" />,
         color: "from-violet-600 to-indigo-600",
         github: "https://github.com/Karamkottish/Solarsystem3D"
@@ -33,7 +84,12 @@ const projects: Project[] = [
         role: "React Native Developer",
         year: "2025",
         description: "Reimagining agritourism with a scalable mobile platform that connects farms to visitors. Features seamless booking for tours and cultural experiences, driving sustainable tourism and economic growth in alignment with Vision 2030.",
-        tags: ["React Native", "Tailwind CSS", "AgriTech", "Sustainable Tourism", "Vision 2030"],
+        techStack: [
+            { name: "React Native", icon: FaReact },
+            { name: "Tailwind CSS", icon: SiTailwindcss },
+            { name: "AgriTech", icon: Leaf },
+            { name: "Vision 2030", icon: Globe }
+        ],
         icon: <Leaf className="w-10 h-10" />,
         color: "from-green-600 to-emerald-600",
         github: "https://github.com/Karamkottish/BustaniPlus"
@@ -43,7 +99,12 @@ const projects: Project[] = [
         role: "Solo React Native Developer",
         year: "2025",
         description: "Modern, clean, trendy university platform with 3D UI and responsive UX. Built in Flutter with Firebase integration and scalable architecture.",
-        tags: ["React Native", "Firebase", "Clean UI", "3D Design", "Full Stack"],
+        techStack: [
+            { name: "React Native", icon: FaReact },
+            { name: "Firebase", icon: SiFirebase },
+            { name: "3D Design", icon: SiThreedotjs },
+            { name: "Full Stack", icon: TbDatabase }
+        ],
         icon: <Smartphone className="w-10 h-10" />,
         color: "from-orange-500 to-red-500",
         github: "https://github.com/Karamkottish/MyUniversity"
@@ -53,7 +114,13 @@ const projects: Project[] = [
         role: "Product Manager • Full Stack Developer",
         year: "2025",
         description: "End-to-end pet-care platform led as Product Manager and Flutter Team Lead. Defined roadmap and MVP scope, conducted user interviews... +32% Engagement.",
-        tags: ["Flutter", "Fast API", "Firebase FCM", "GitHub", "AWS", "Languages", "AI API integration",],
+        techStack: [
+            { name: "Flutter", icon: SiFlutter },
+            { name: "Fast API", icon: SiFastapi },
+            { name: "Firebase", icon: SiFirebase },
+            { name: "AWS", icon: FaAws },
+            { name: "AI Integration", icon: TbApi }
+        ],
         icon: <Folders className="w-10 h-10" />,
         color: "from-blue-500 to-cyan-500",
         github: "https://github.com/pawspalconnect/ppc"
@@ -63,7 +130,12 @@ const projects: Project[] = [
         role: "Frontend Web Developer",
         year: "2024",
         description: "Medical dashboard web application built with React.js, featuring product management, UI components, and clean responsive design.",
-        tags: ["React.js", "JavaScript", "Web App", "Responsive", "Clean UI"],
+        techStack: [
+            { name: "React.js", icon: FaReact },
+            { name: "JavaScript", icon: SiJavascript },
+            { name: "Responsive", icon: Smartphone },
+            { name: "Clean UI", icon: MdOutlineCleanHands }
+        ],
         icon: <Globe className="w-10 h-10" />,
         color: "from-emerald-500 to-green-500",
         github: "https://github.com/AbdallahZagh/E-commerce-web/tree/store_dashboard"
@@ -73,7 +145,12 @@ const projects: Project[] = [
         role: "Backend Developer",
         year: "2025",
         description: "An exclusive, real-time messaging platform designed for seamless private communication. Engineered a robust backend using PHP, implementing secure authentication and optimized database interactions for instant message delivery.",
-        tags: ["PHP", "MySQL", "Real-time", "Backend Architecture", "Secure Auth"],
+        techStack: [
+            { name: "PHP", icon: FaPhp },
+            { name: "MySQL", icon: SiMysql },
+            { name: "Real-time", icon: TbApi },
+            { name: "Secure Auth", icon: MdArchitecture }
+        ],
         icon: <MessageSquare className="w-10 h-10" />,
         color: "from-violet-500 to-fuchsia-500",
         github: "https://github.com/AbdallahZagh/chatly"
@@ -83,7 +160,12 @@ const projects: Project[] = [
         role: "Part-time Developer",
         year: "2025",
         description: "Warehouse management mobile app (internal tooling). Optimized for performance and offline capabilities.",
-        tags: ["Flutter", "REST", "SQLite", "Provider", "Clean Architecture"],
+        techStack: [
+            { name: "Flutter", icon: SiFlutter },
+            { name: "REST API", icon: TbApi },
+            { name: "SQLite", icon: SiSqlite },
+            { name: "Clean Arch", icon: MdArchitecture }
+        ],
         icon: <Smartphone className="w-10 h-10" />,
         color: "from-amber-500 to-yellow-500",
         github: "https://github.com/Karamkottish/WareHouse-Flutter"
@@ -93,7 +175,12 @@ const projects: Project[] = [
         role: "Flutter Lead",
         year: "2025",
         description: "Connecting Labors with Clients, offline cache, video demo. Complex integration with multiple payment gateways.",
-        tags: ["Flutter", "Clean Architecture", "Django", "Riverpod", "Stripe", "Firebase"],
+        techStack: [
+            { name: "Flutter", icon: SiFlutter },
+            { name: "Django", icon: SiDjango },
+            { name: "Stripe", icon: FaStripe },
+            { name: "Firebase", icon: SiFirebase }
+        ],
         icon: <Smartphone className="w-10 h-10" />,
         color: "from-purple-500 to-pink-500",
         github: "https://gitlab.com/revonix1/revonix-frontend"
@@ -103,7 +190,11 @@ const projects: Project[] = [
         role: "Solo Developer",
         year: "2023",
         description: "Catalog, cart, payments, responsive web + mobile. A deep dive into complex state management and payment flows.",
-        tags: ["Stripe", "Firebase", "Responsive"],
+        techStack: [
+            { name: "Stripe", icon: FaStripe },
+            { name: "Firebase", icon: SiFirebase },
+            { name: "Responsive", icon: Smartphone }
+        ],
         icon: <Smartphone className="w-10 h-10" />,
         color: "from-teal-500 to-emerald-500",
         github: "#"
@@ -113,7 +204,11 @@ const projects: Project[] = [
         role: "Flutter Lead",
         year: "2023",
         description: "Semester Project. Connect volunteers with companies, theming, analytics.",
-        tags: ["Getx", "Charts", "Theming", "Languages", "Http"],
+        techStack: [
+            { name: "Getx", icon: SiFlutter }, // Using Flutter icon as proxy for GetX
+            { name: "Theming", icon: MdOutlineCleanHands },
+            { name: "Analytics", icon: TbDatabase }
+        ],
         icon: <Smartphone className="w-10 h-10" />,
         color: "from-indigo-500 to-blue-500",
         github: "https://github.com/Karamkottish/Change-ASPU/tree/flutter"
@@ -195,14 +290,16 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
                         {project.description}
                     </p>
 
-                    <div className="flex flex-wrap gap-2 mt-auto">
-                        {project.tags.map((tag) => (
-                            <span
-                                key={tag}
-                                className="text-[10px] font-semibold px-2 py-1 rounded bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 text-muted-foreground hover:text-foreground transition-colors"
-                            >
-                                {tag}
-                            </span>
+                    <div className="flex flex-wrap gap-3 mt-auto">
+                        {project.techStack.map((tech, idx) => (
+                            <div key={idx} className="group/icon relative">
+                                <div className="p-2 rounded-xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 text-muted-foreground hover:text-foreground hover:bg-black/10 dark:hover:bg-white/10 transition-colors cursor-help">
+                                    <tech.icon className="w-5 h-5" />
+                                </div>
+                                <span className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-black dark:bg-white text-white dark:text-black text-xs rounded opacity-0 group-hover/icon:opacity-100 transition-opacity pointer-events-none whitespace-nowrap font-bold">
+                                    {tech.name}
+                                </span>
+                            </div>
                         ))}
                     </div>
                 </div>
