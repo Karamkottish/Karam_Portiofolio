@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react"
 import { motion, useMotionTemplate, useMotionValue } from "framer-motion"
-import { Github, ExternalLink, Folders, Smartphone, Globe, MessageSquare, Leaf } from "lucide-react"
+import { Github, ExternalLink, Folders, Smartphone, Globe, MessageSquare, Leaf, Rocket } from "lucide-react"
 import ProjectCanvas from "@/components/canvas/ProjectCanvas"
 import { cn } from "@/lib/utils"
 
@@ -18,6 +18,16 @@ type Project = {
 }
 
 const projects: Project[] = [
+    {
+        title: "Cosmic Journey",
+        role: "Frontend Developer",
+        year: "2026",
+        description: "A high-fidelity, scroll-driven 3D simulation of the solar system. Features cinematic transitions, real-time NASA data integration, and scientifically accurate Keplerian orbital mechanics.",
+        tags: ["Three.js", "WebGL", "Vite", "NASA API", "Physics"],
+        icon: <Rocket className="w-10 h-10" />,
+        color: "from-violet-600 to-indigo-600",
+        github: "https://github.com/Karamkottish/Solarsystem3D"
+    },
     {
         title: "BustaniPlus",
         role: "React Native Developer",
