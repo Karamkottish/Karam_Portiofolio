@@ -28,13 +28,14 @@ const courses: Course[] = [
     { title: "Flutter - Beginner", issuer: "Merit Center", date: "Jan 2024", skills: ["Mobile Dev"] },
     { title: "Python Programming", issuer: "Google Cloud", date: "May 2021" },
     { title: "Intro to Database & SQL", issuer: "Google Cloud", date: "Jun 2021" },
-    { title: "Agile Methodology", issuer: "Edraak", date: "Sep 2025", skills: ["Agile"], image: "/images/courses/Agile Methodology.pdf" },
-    { title: "Project Management Core", issuer: "Udemy", date: "Dec 2025", image: "/images/courses/ProjectEN.pdf" },
+    { title: "Agile Methodology", issuer: "Edraak", date: "Sep 2025", skills: ["Agile"], image: "/images/courses/Agile%20Methodology.pdf" },
+    { title: "Project Management Core", issuer: "Udemy", date: "Dec 2025", image: "/images/courses/Project%20Mnagament.pdf" },
+    { title: "The Complete Manager", issuer: "Udemy", date: "Feb 2026", skills: ["Management", "Leadership", "Mentoring"], image: "/images/courses/Manager%20Certification.pdf" },
     { title: "UI UX", issuer: "Edraak", date: "Sep 2025", image: "/images/courses/uiuxen.pdf" },
     { title: "Intro to Cryptography", issuer: "Univ. of Leeds", date: "Feb 2025" },
     { title: "Ethical hacking 101", issuer: "Simplilearn", date: "Dec 2024" },
     { title: "Cisco Certified Network Associate", issuer: "Hadara", date: "May 2023" },
-    { title: "Product Management Foundation", issuer: "Edraak", date: "Sep 2025", image: "/images/courses/Product Mnagament.jpg" },
+    { title: "Product Management Foundation", issuer: "Edraak", date: "Sep 2025", image: "/images/courses/Product%20Mnagament.jpg" },
     { title: "Delegation & Mentoring", issuer: "Edraak", date: "Sep 2025", image: "/images/courses/DelegaationCounchingMentoringSkillsEng.pdf" }
 ]
 
@@ -90,14 +91,16 @@ function CertificationModal({ course, onClose }: { course: Course, onClose: () =
 
                         {/* Certificate Preview */}
                         <div className="relative aspect-video w-full rounded-2xl overflow-hidden bg-linear-to-br from-gray-800 to-gray-900 border border-white/5 shadow-inner mb-8 group flex items-center justify-center">
-                            {course.image ? (
-                                course.image.endsWith('.pdf') ? (
-                                    <iframe src={course.image + "#view=FitH"} className="w-full h-full border-none" />
+                            {course.image ? (() => {
+                                const basePath = process.env.NEXT_PUBLIC_BASE_PATH || ''
+                                const src = course.image!.startsWith('http') ? course.image! : `${basePath}${course.image}`
+                                return course.image!.endsWith('.pdf') ? (
+                                    <iframe src={src + "#view=FitH"} className="w-full h-full border-none" />
                                 ) : (
                                     // eslint-disable-next-line @next/next/no-img-element
-                                    <img src={course.image} alt={course.title} className="w-full h-full object-contain" />
+                                    <img src={src} alt={course.title} className="w-full h-full object-contain" />
                                 )
-                            ) : (
+                            })() : (
                                 <div className="absolute inset-0 flex items-center justify-center flex-col gap-4">
                                     <Award className="w-16 h-16 text-white/20 group-hover:scale-110 transition-transform duration-500" />
                                     <p className="text-white/40 font-mono text-sm uppercase tracking-widest">Certificate Preview</p>

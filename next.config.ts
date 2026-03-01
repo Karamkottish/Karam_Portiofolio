@@ -7,6 +7,9 @@ const nextConfig: NextConfig = {
   },
   basePath: "/Karam_Portiofolio", // Repository name
   assetPrefix: "/Karam_Portiofolio/", // Asset loading path
+  env: {
+    NEXT_PUBLIC_BASE_PATH: "/Karam_Portiofolio",
+  },
 };
 
 export default nextConfig;

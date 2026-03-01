@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils"
 
 // Icons
 import {
-    FaReact, FaPhp, FaAws, FaGithub, FaStripe, FaPython
+    FaReact, FaPhp, FaAws, FaGithub, FaStripe, FaPython, FaAndroid
 } from "react-icons/fa"
 import {
     SiTailwindcss, SiThreedotjs, SiVite, SiFirebase, SiFlutter,
@@ -32,6 +32,8 @@ type Project = {
     icon: React.ReactNode
     color: string // For accent gradients
     github?: string
+    website?: string
+    android?: string | "coming_soon"
 }
 
 // Icon Mapping Helper
@@ -63,6 +65,24 @@ const Icons = {
 }
 
 const projects: Project[] = [
+    {
+        title: "Paws Pal Connect",
+        role: "Product Manager • Full Stack Developer",
+        year: "2025",
+        description: "End-to-end pet-care platform led as Product Manager and Flutter Team Lead. Defined roadmap and MVP scope, conducted user interviews... +32% Engagement.",
+        techStack: [
+            { name: "Flutter", icon: SiFlutter },
+            { name: "Fast API", icon: SiFastapi },
+            { name: "Firebase", icon: SiFirebase },
+            { name: "AWS", icon: FaAws },
+            { name: "AI Integration", icon: TbApi }
+        ],
+        icon: <Folders className="w-10 h-10" />,
+        color: "from-blue-500 to-cyan-500",
+        github: "https://github.com/pawspalconnect/ppc",
+        website: "https://www.pawspalconnect.com/",
+        android: "coming_soon"
+    },
     {
         title: "Cosmic Journey",
         role: "Frontend Developer",
@@ -108,22 +128,6 @@ const projects: Project[] = [
         icon: <Smartphone className="w-10 h-10" />,
         color: "from-orange-500 to-red-500",
         github: "https://github.com/Karamkottish/MyUniversity"
-    },
-    {
-        title: "Paws Pal Connect",
-        role: "Product Manager • Full Stack Developer",
-        year: "2025",
-        description: "End-to-end pet-care platform led as Product Manager and Flutter Team Lead. Defined roadmap and MVP scope, conducted user interviews... +32% Engagement.",
-        techStack: [
-            { name: "Flutter", icon: SiFlutter },
-            { name: "Fast API", icon: SiFastapi },
-            { name: "Firebase", icon: SiFirebase },
-            { name: "AWS", icon: FaAws },
-            { name: "AI Integration", icon: TbApi }
-        ],
-        icon: <Folders className="w-10 h-10" />,
-        color: "from-blue-500 to-cyan-500",
-        github: "https://github.com/pawspalconnect/ppc"
     },
     {
         title: "E-commerce Web",
@@ -258,13 +262,42 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
                         <div className={cn("p-4 rounded-2xl bg-gradient-to-br opacity-80 group-hover:opacity-100 transition-all shadow-lg text-white", project.color)}>
                             {project.icon}
                         </div>
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 relative">
+                            {project.android && (
+                                project.android === "coming_soon" ? (
+                                    <div className="group/android relative flex items-center justify-center p-2 rounded-full cursor-not-allowed hover:bg-black/5 dark:hover:bg-white/10 transition-colors z-20">
+                                        <FaAndroid className="w-5 h-5 text-muted-foreground" />
+                                        <span className="absolute -top-10 left-1/2 -translate-x-1/2 px-2 py-1 bg-black dark:bg-white text-white dark:text-black text-xs rounded opacity-0 group-hover/android:opacity-100 transition-opacity pointer-events-none whitespace-nowrap font-bold">
+                                            Coming Soon
+                                        </span>
+                                    </div>
+                                ) : (
+                                    <a
+                                        href={project.android}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer transition-colors z-20"
+                                    >
+                                        <FaAndroid className="w-5 h-5 text-muted-foreground hover:text-foreground" />
+                                    </a>
+                                )
+                            )}
+                            {project.website && (
+                                <a
+                                    href={project.website}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer transition-colors z-20"
+                                >
+                                    <ExternalLink className="w-5 h-5 text-muted-foreground hover:text-foreground" />
+                                </a>
+                            )}
                             {project.github && (
                                 <a
                                     href={project.github}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer transition-colors"
+                                    className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer transition-colors z-20"
                                 >
                                     <Github className="w-5 h-5 text-muted-foreground hover:text-foreground" />
                                 </a>
