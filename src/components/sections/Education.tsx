@@ -5,6 +5,7 @@ import { motion, useScroll, useTransform } from "framer-motion"
 import { GraduationCap, School, Calendar, MapPin, Award, BookOpen } from "lucide-react"
 import EducationCanvas from "@/components/canvas/EducationCanvas"
 import { cn } from "@/lib/utils"
+import { usePerspective } from "@/components/PerspectiveProvider"
 // Import icons for the specific institutions (using generic lucide for now, but conceptualizing placeholders)
 
 type EducationItem = {
@@ -33,7 +34,7 @@ const educationData: EducationItem[] = [
     }
 ]
 
-function EducationCard({ item, index }: { item: EducationItem, index: number }) {
+function EducationCard({ item, index, mode }: { item: EducationItem, index: number, mode: "pm" | "dev" }) {
     const isEven = index % 2 === 0
 
     return (
@@ -50,10 +51,16 @@ function EducationCard({ item, index }: { item: EducationItem, index: number }) 
             )}
         >
             {/* Center Node on Timeline - hidden on mobile */}
-            <div className="hidden md:block absolute left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-white z-20 border-4 border-background shadow-[0_0_20px_rgba(255,255,255,0.5)]" />
+            <div className={cn(
+                "hidden md:block absolute left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-white z-20 border-4 border-background shadow-[0_0_20px_rgba(255,255,255,0.5)]",
+                mode === "pm" ? "shadow-purple-500/50" : "shadow-blue-500/50"
+            )} />
 
             {/* Mobile timeline dot - shown only on mobile */}
-            <div className="md:hidden flex-shrink-0 w-3 h-3 rounded-full bg-white z-20 border-2 border-background shadow-[0_0_15px_rgba(255,255,255,0.5)]" />
+            <div className={cn(
+                "md:hidden shrink-0 w-3 h-3 rounded-full bg-white z-20 border-2 border-background shadow-[0_0_15px_rgba(255,255,255,0.5)]",
+                mode === "pm" ? "shadow-purple-500/50" : "shadow-blue-500/50"
+            )} />
 
             {/* Content Card */}
             <div className={cn(
@@ -62,12 +69,15 @@ function EducationCard({ item, index }: { item: EducationItem, index: number }) 
                 "text-left md:text-left",
                 isEven ? "md:text-right" : "md:text-left"
             )}>
-                <div className="group relative overflow-hidden rounded-2xl bg-white/5 dark:bg-zinc-900/60 backdrop-blur-md border border-white/10 p-4 md:p-6 hover:bg-white/10 transition-all duration-300 hover:shadow-2xl hover:shadow-purple-500/10 hover:-translate-y-1">
+                <div className={cn(
+                    "group relative overflow-hidden rounded-2xl bg-white/5 dark:bg-zinc-900/60 backdrop-blur-md border border-white/10 p-4 md:p-6 hover:bg-white/10 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1",
+                    mode === "pm" ? "hover:shadow-purple-500/10" : "hover:shadow-cyan-500/10"
+                )}>
 
                     {/* Glowing Border Gradient */}
                     <div className={cn(
-                        "absolute top-0 left-0 w-1 h-full bg-gradient-to-b opacity-0 group-hover:opacity-100 transition-opacity duration-300",
-                        item.color
+                        "absolute top-0 left-0 w-1 h-full bg-linear-to-b opacity-0 group-hover:opacity-100 transition-opacity duration-300",
+                        mode === "pm" ? "from-purple-400 to-pink-500" : item.color
                     )} />
 
                     <div className={cn(
@@ -76,7 +86,10 @@ function EducationCard({ item, index }: { item: EducationItem, index: number }) 
                         "flex-row",
                         isEven ? "md:flex-row-reverse" : "md:flex-row"
                     )}>
-                        <div className={cn("p-2 rounded-lg bg-gradient-to-br text-white shadow-lg flex-shrink-0", item.color)}>
+                        <div className={cn(
+                            "p-2 rounded-lg bg-linear-to-br text-white shadow-lg shrink-0",
+                            mode === "pm" ? "from-purple-500 to-pink-500" : item.color
+                        )}>
                             {index === 0 ? <GraduationCap className="w-4 h-4 md:w-5 md:h-5" /> : <School className="w-4 h-4 md:w-5 md:h-5" />}
                         </div>
                         <h3 className="text-base md:text-xl font-bold leading-tight">{item.school}</h3>
@@ -123,6 +136,8 @@ function EducationCard({ item, index }: { item: EducationItem, index: number }) 
 }
 
 export function Education() {
+    const { mode } = usePerspective()
+
     return (
         <section id="education" className="relative min-h-screen py-32 overflow-hidden">
             <EducationCanvas />
@@ -135,20 +150,28 @@ export function Education() {
                     className="text-center mb-20"
                 >
                     <h2 className="text-4xl md:text-6xl font-black mb-6 tracking-tight">
-                        Academic <span className="text-transparent bg-clip-text bg-linear-to-r from-cyan-400 to-blue-600">Journey</span>
+                        Academic <span className={cn(
+                            "text-transparent bg-clip-text bg-linear-to-r",
+                            mode === "pm" ? "from-purple-400 to-pink-600" : "from-cyan-400 to-blue-600"
+                        )}>Journey</span>
                     </h2>
-                    <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                        The educational foundation that powers my engineering mindset.
+                    <p className="text-lg text-muted-foreground max-w-2xl mx-auto transition-all">
+                        {mode === "pm"
+                            ? "The educational foundation that powers my strategic thinking and systematic approach to problem solving."
+                            : "The educational foundation that powers my engineering mindset and technical versatility."}
                     </p>
                 </motion.div>
 
                 <div className="relative">
                     {/* Timeline Line */}
-                    <div className="absolute left-1/2 top-0 bottom-0 w-px bg-linear-to-b from-transparent via-cyan-500/50 to-transparent -translate-x-1/2 md:block hidden" />
+                    <div className={cn(
+                        "absolute left-1/2 top-0 bottom-0 w-px bg-linear-to-b from-transparent to-transparent -translate-x-1/2 md:block hidden",
+                        mode === "pm" ? "via-purple-500/50" : "via-cyan-500/50"
+                    )} />
 
                     <div className="space-y-12">
                         {educationData.map((item, index) => (
-                            <EducationCard key={index} item={item} index={index} />
+                            <EducationCard key={index} item={item} index={index} mode={mode} />
                         ))}
                     </div>
                 </div>

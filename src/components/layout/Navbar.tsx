@@ -1,11 +1,12 @@
 "use client"
 
 import * as React from "react"
-import { Moon, Sun, Menu, X } from "lucide-react"
+import { Moon, Sun, Menu, X, Briefcase, Code2 } from "lucide-react"
 import { useTheme } from "next-themes"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { motion, AnimatePresence } from "framer-motion"
+import { usePerspective } from "@/components/PerspectiveProvider"
 
 
 const navLinks = [
@@ -19,6 +20,7 @@ const navLinks = [
 
 export function Navbar() {
     const { theme, setTheme } = useTheme()
+    const { mode, toggleMode } = usePerspective()
     const [isOpen, setIsOpen] = React.useState(false)
     const [scrolled, setScrolled] = React.useState(false)
     const [mounted, setMounted] = React.useState(false)
@@ -70,6 +72,36 @@ export function Navbar() {
                     </div>
 
                     <div className="hidden md:flex items-center gap-4">
+                        {/* Perspective Toggle */}
+                        {mounted && (
+                            <button
+                                onClick={toggleMode}
+                                className={cn(
+                                    "relative flex items-center justify-between w-20 h-8 p-1 rounded-full cursor-pointer transition-colors border",
+                                    mode === "pm"
+                                        ? "bg-purple-500/10 border-purple-500/30 text-purple-600 dark:text-purple-400"
+                                        : "bg-blue-500/10 border-blue-500/30 text-blue-600 dark:text-blue-400"
+                                )}
+                                title={`Switch to ${mode === "pm" ? "Developer" : "Product Manager"} view`}
+                            >
+                                <div className="z-10 w-full flex justify-between px-1 pointer-events-none">
+                                    <Briefcase className={cn("w-4 h-4", mode !== "pm" && "opacity-50")} />
+                                    <Code2 className={cn("w-4 h-4", mode !== "dev" && "opacity-50")} />
+                                </div>
+                                <motion.div
+                                    className={cn(
+                                        "absolute top-1 bottom-1 w-8 rounded-full shadow-sm",
+                                        mode === "pm" ? "bg-purple-500/30 backdrop-blur-md" : "bg-blue-500/30 backdrop-blur-md"
+                                    )}
+                                    initial={false}
+                                    animate={{
+                                        left: mode === "pm" ? "4px" : "calc(100% - 36px)",
+                                    }}
+                                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                                />
+                            </button>
+                        )}
+
                         <button
                             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
                             className="p-2 rounded-full hover:bg-accent/50 transition-colors focus:outline-none"
@@ -77,7 +109,6 @@ export function Navbar() {
                         >
                             <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
                             <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" style={{ marginTop: "-20px" }} />
-                            {/* Note: The absolute positioning trick for moon might need a container, simplifying for now */}
                         </button>
                     </div>
 
@@ -112,35 +143,68 @@ export function Navbar() {
                                 </Link>
                             ))}
 
-                            <div className="mt-4 px-3 py-2 border-t border-border/10 flex items-center justify-between">
-                                <span className="font-medium text-foreground/80">Appearance</span>
-                                {mounted && (
-                                    <div
-                                        className={cn(
-                                            "w-16 h-8 rounded-full p-1 cursor-pointer transition-colors duration-500 relative bg-muted",
-                                            theme === "dark" ? "bg-slate-950 ring-1 ring-slate-800" : "bg-sky-200 ring-1 ring-sky-300"
-                                        )}
-                                        onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                                    >
-                                        <motion.div
+                            <div className="mt-4 px-3 py-4 border-t border-border/10 flex flex-col gap-4">
+                                <div className="flex items-center justify-between">
+                                    <span className="font-medium text-foreground/80">Perspective</span>
+                                    {mounted && (
+                                        <button
+                                            onClick={toggleMode}
                                             className={cn(
-                                                "w-6 h-6 rounded-full shadow-sm flex items-center justify-center absolute top-1",
-                                                theme === "dark" ? "bg-slate-800 text-sky-200" : "bg-white text-yellow-500"
+                                                "relative flex items-center justify-between w-20 h-8 p-1 rounded-full cursor-pointer transition-colors border",
+                                                mode === "pm"
+                                                    ? "bg-purple-500/10 border-purple-500/30 text-purple-600 dark:text-purple-400"
+                                                    : "bg-blue-500/10 border-blue-500/30 text-blue-600 dark:text-blue-400"
                                             )}
-                                            animate={{
-                                                x: theme === "dark" ? 32 : 0,
-                                                rotate: theme === "dark" ? 360 : 0
-                                            }}
-                                            transition={{ type: "spring", stiffness: 300, damping: 20 }}
                                         >
-                                            {theme === "dark" ? (
-                                                <Moon className="w-4 h-4" />
-                                            ) : (
-                                                <Sun className="w-4 h-4" fill="currentColor" />
+                                            <div className="z-10 w-full flex justify-between px-1 pointer-events-none">
+                                                <Briefcase className={cn("w-4 h-4", mode !== "pm" && "opacity-50")} />
+                                                <Code2 className={cn("w-4 h-4", mode !== "dev" && "opacity-50")} />
+                                            </div>
+                                            <motion.div
+                                                className={cn(
+                                                    "absolute top-1 bottom-1 w-8 rounded-full shadow-sm",
+                                                    mode === "pm" ? "bg-purple-500/30" : "bg-blue-500/30"
+                                                )}
+                                                initial={false}
+                                                animate={{
+                                                    left: mode === "pm" ? "4px" : "calc(100% - 36px)",
+                                                }}
+                                                transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                                            />
+                                        </button>
+                                    )}
+                                </div>
+
+                                <div className="flex items-center justify-between">
+                                    <span className="font-medium text-foreground/80">Appearance</span>
+                                    {mounted && (
+                                        <div
+                                            className={cn(
+                                                "w-16 h-8 rounded-full p-1 cursor-pointer transition-colors duration-500 relative bg-muted",
+                                                theme === "dark" ? "bg-slate-950 ring-1 ring-slate-800" : "bg-sky-200 ring-1 ring-sky-300"
                                             )}
-                                        </motion.div>
-                                    </div>
-                                )}
+                                            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                                        >
+                                            <motion.div
+                                                className={cn(
+                                                    "w-6 h-6 rounded-full shadow-sm flex items-center justify-center absolute top-1",
+                                                    theme === "dark" ? "bg-slate-800 text-sky-200" : "bg-white text-yellow-500"
+                                                )}
+                                                animate={{
+                                                    x: theme === "dark" ? 32 : 0,
+                                                    rotate: theme === "dark" ? 360 : 0
+                                                }}
+                                                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                                            >
+                                                {theme === "dark" ? (
+                                                    <Moon className="w-4 h-4" />
+                                                ) : (
+                                                    <Sun className="w-4 h-4" fill="currentColor" />
+                                                )}
+                                            </motion.div>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </motion.div>

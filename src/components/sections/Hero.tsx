@@ -2,9 +2,13 @@
 
 import { motion } from "framer-motion"
 import HeroCanvas from "@/components/canvas/HeroCanvas"
+import { cn } from "@/lib/utils"
 import { ArrowDown, Download } from "lucide-react"
+import { usePerspective } from "@/components/PerspectiveProvider"
 
 export function Hero() {
+    const { mode } = usePerspective()
+
     return (
         <section id="hero" className="relative h-screen w-full flex items-center justify-center overflow-hidden bg-background">
             {/* 3D Background */}
@@ -41,23 +45,35 @@ export function Hero() {
                 >
                     <div className="text-xl md:text-2xl text-muted-foreground font-light max-w-3xl mx-auto mb-12 space-y-6">
                         <p>
-                            Product Manager & Full Stack Developer with <span className="text-foreground font-semibold border-b-2 border-primary/20">3+ years</span> of experience.
+                            {mode === "pm"
+                                ? <span className="text-purple-600 dark:text-purple-400 font-bold">Product Manager</span>
+                                : <span className="text-blue-600 dark:text-blue-400 font-bold">Full Stack Developer</span>}
+                            {" "}& {mode === "pm" ? "Technical Lead" : "Product Thinker"} with <span className="text-foreground font-semibold border-b-2 border-primary/20">3+ years</span> of experience.
                         </p>
-                        <p className="text-base md:text-lg opacity-90 max-w-2xl mx-auto leading-relaxed">
-                            Specializing in translating business requirements into user-centric digital products.
-                            I lead cross-functional teams to drive roadmap execution using high-performance tech:
+                        <p className="text-base md:text-lg opacity-90 max-w-2xl mx-auto leading-relaxed h-[60px] md:h-auto">
+                            {mode === "pm"
+                                ? "Specializing in translating business requirements into user-centric digital products. I lead cross-functional teams to drive roadmap execution and deliver measurable impact."
+                                : "Specializing in building scalable, high-performance web and mobile applications. I architect robust solutions from database design to seamless interactive 3D frontends."}
                         </p>
 
-                        <div className="flex flex-wrap justify-center gap-3 pt-2">
-                            {["Flutter", "React Native", "PHP", "FastAPI", "Next Js", "Three Js", "React Js"].map((tech, i) => (
+                        <div className="flex flex-wrap justify-center gap-3 pt-4">
+                            {(mode === "pm"
+                                ? ["Roadmap Planning", "Agile Execution", "Data-Driven Decisions", "Technical Leadership", "Stakeholder Comm", "User Research"]
+                                : ["Flutter", "React Native", "PHP", "FastAPI", "Next.js", "Three.js", "React"]
+                            ).map((item, i) => (
                                 <motion.span
-                                    key={tech}
+                                    key={`${mode}-${item}`}
                                     initial={{ opacity: 0, scale: 0.8, y: 10 }}
                                     animate={{ opacity: 1, scale: 1, y: 0 }}
-                                    transition={{ delay: 0.8 + (i * 0.1), type: "spring" }}
-                                    className="px-4 py-1.5 rounded-full bg-linear-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 text-foreground font-medium text-sm hover:scale-105 hover:border-blue-500/40 hover:from-blue-500/20 hover:to-purple-500/20 transition-all cursor-default shadow-[0_0_15px_-3px_rgba(59,130,246,0.1)] hover:shadow-[0_0_20px_-3px_rgba(59,130,246,0.3)]"
+                                    transition={{ delay: 0.2 + (i * 0.1), type: "spring" }}
+                                    className={cn(
+                                        "px-4 py-1.5 rounded-full border text-foreground font-medium text-sm transition-all cursor-default",
+                                        mode === "pm"
+                                            ? "bg-purple-500/10 border-purple-500/20 hover:border-purple-500/40 shadow-[0_0_15px_-3px_rgba(168,85,247,0.1)] hover:shadow-[0_0_20px_-3px_rgba(168,85,247,0.3)]"
+                                            : "bg-blue-500/10 border-blue-500/20 hover:border-blue-500/40 shadow-[0_0_15px_-3px_rgba(59,130,246,0.1)] hover:shadow-[0_0_20px_-3px_rgba(59,130,246,0.3)]"
+                                    )}
                                 >
-                                    {tech}
+                                    {item}
                                 </motion.span>
                             ))}
                         </div>

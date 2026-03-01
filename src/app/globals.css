@@ -96,3 +96,18 @@ html {
   @apply bg-clip-text text-transparent bg-linear-to-r from-blue-600 via-purple-500 to-pink-500 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400;
 
 }
+
+/* Developer Debug Mode Styles */
+body.debug-mode-active div,
+body.debug-mode-active section,
+body.debug-mode-active header,
+body.debug-mode-active footer,
+body.debug-mode-active main {
+  outline: 1px dashed rgba(255, 0, 0, 0.25) !important;
+  outline-offset: -1px;
+}
+
+body.debug-mode-active #debug-console-wrapper,
+body.debug-mode-active #debug-console-wrapper div {
+  outline: none !important;
+}

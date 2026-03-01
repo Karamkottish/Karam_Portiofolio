@@ -5,6 +5,7 @@ import { motion, useMotionTemplate, useMotionValue } from "framer-motion"
 import { Github, ExternalLink, Folders, Smartphone, Globe, MessageSquare, Leaf, Rocket } from "lucide-react"
 import ProjectCanvas from "@/components/canvas/ProjectCanvas"
 import { cn } from "@/lib/utils"
+import { usePerspective } from "@/components/PerspectiveProvider"
 
 // Icons
 import {
@@ -34,6 +35,8 @@ type Project = {
     github?: string
     website?: string
     android?: string | "coming_soon"
+    pmDescription?: string
+    pmRole?: string
 }
 
 // Icon Mapping Helper
@@ -70,6 +73,8 @@ const projects: Project[] = [
         role: "Product Manager • Full Stack Developer",
         year: "2025",
         description: "End-to-end pet-care platform led as Product Manager and Flutter Team Lead. Defined roadmap and MVP scope, conducted user interviews... +32% Engagement.",
+        pmDescription: "Led cross-functional team of 4 from ideation to launch. Defined product roadmap, conducted user research resulting in +32% engagement, and managed agile sprints.",
+        pmRole: "Product Manager",
         techStack: [
             { name: "Flutter", icon: SiFlutter },
             { name: "Fast API", icon: SiFastapi },
@@ -134,6 +139,8 @@ const projects: Project[] = [
         role: "Frontend Web Developer",
         year: "2024",
         description: "Medical dashboard web application built with React.js, featuring product management, UI components, and clean responsive design.",
+        pmDescription: "Designed an intuitive merchant dashboard flow. Reduced inventory management time by 40% through UX improvements and clear data visualization.",
+        pmRole: "Product Owner",
         techStack: [
             { name: "React.js", icon: FaReact },
             { name: "JavaScript", icon: SiJavascript },
@@ -219,7 +226,7 @@ const projects: Project[] = [
     }
 ]
 
-function ProjectCard({ project, index }: { project: Project; index: number }) {
+function ProjectCard({ project, index, mode }: { project: Project; index: number; mode: "pm" | "dev" }) {
     const mouseX = useMotionValue(0)
     const mouseY = useMotionValue(0)
 
@@ -255,11 +262,11 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
                     }}
                 />
                 {/* Color Accent Line */}
-                <div className={cn("absolute top-0 left-0 w-full h-1 bg-gradient-to-r opacity-50 group-hover:opacity-100 transition-opacity", project.color)} />
+                <div className={cn("absolute top-0 left-0 w-full h-1 bg-linear-to-r opacity-50 group-hover:opacity-100 transition-opacity", project.color)} />
 
                 <div className="flex flex-col h-full relative z-10">
                     <div className="flex justify-between items-start mb-6">
-                        <div className={cn("p-4 rounded-2xl bg-gradient-to-br opacity-80 group-hover:opacity-100 transition-all shadow-lg text-white", project.color)}>
+                        <div className={cn("p-4 rounded-2xl bg-linear-to-br opacity-80 group-hover:opacity-100 transition-all shadow-lg text-white", project.color)}>
                             {project.icon}
                         </div>
                         <div className="flex gap-2 relative">
@@ -307,20 +314,20 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
 
                     <div className="mb-4">
                         <div className="flex items-center gap-2 mb-2">
-                            <span className={cn("text-xs font-bold px-2 py-0.5 rounded text-white bg-gradient-to-r", project.color)}>
+                            <span className={cn("text-xs font-bold px-2 py-0.5 rounded text-white bg-linear-to-r", project.color)}>
                                 {project.year}
                             </span>
                             <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                                {project.role}
+                                {mode === "pm" && project.pmRole ? project.pmRole : project.role}
                             </span>
                         </div>
-                        <h3 className="text-2xl font-bold text-foreground group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-gray-400 dark:group-hover:from-white dark:group-hover:to-gray-400 transition-all">
+                        <h3 className="text-2xl font-bold text-foreground group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-linear-to-r group-hover:from-white group-hover:to-gray-400 dark:group-hover:from-white dark:group-hover:to-gray-400 transition-all">
                             {project.title}
                         </h3>
                     </div>
 
                     <p className="text-muted-foreground text-sm leading-relaxed mb-6 grow">
-                        {project.description}
+                        {mode === "pm" && project.pmDescription ? project.pmDescription : project.description}
                     </p>
 
                     <div className="flex flex-wrap gap-3 mt-auto">
@@ -345,6 +352,8 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
 }
 
 export function Projects() {
+    const { mode } = usePerspective()
+
     return (
         <section id="projects" className="relative py-24 min-h-screen bg-background overflow-hidden">
             {/* 3D Background */}
@@ -362,16 +371,21 @@ export function Projects() {
                     className="text-center mb-16"
                 >
                     <h2 className="text-4xl md:text-5xl font-black mb-6 tracking-tight">
-                        Featured <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">Projects</span>
+                        {mode === "pm" ? "Product" : "Featured"}{" "}
+                        <span className="text-transparent bg-clip-text bg-linear-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
+                            {mode === "pm" ? "Case Studies" : "Projects"}
+                        </span>
                     </h2>
-                    <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
-                        A selection of my recent work, ranging from mobile applications to complex web platforms.
+                    <p className="text-muted-foreground max-w-2xl mx-auto text-lg hover:italic transition-all">
+                        {mode === "pm"
+                            ? "A selection of successful product lifecycles, emphasizing strategy, roadmapping, and user impact."
+                            : "A selection of my recent technical work, ranging from mobile applications to complex web platforms."}
                     </p>
                 </motion.div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {projects.map((project, index) => (
-                        <ProjectCard key={index} project={project} index={index} />
+                        <ProjectCard key={index} project={project} index={index} mode={mode} />
                     ))}
                 </div>
             </div>

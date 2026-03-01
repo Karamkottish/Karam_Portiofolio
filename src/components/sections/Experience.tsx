@@ -2,8 +2,9 @@
 
 import { useRef, useState } from "react"
 import { motion, useScroll, useTransform, useSpring, useMotionTemplate, useMotionValue } from "framer-motion"
-import { Briefcase, Calendar, MapPin, ChevronRight } from "lucide-react"
+import { Briefcase, Calendar, MapPin, ChevronRight, Activity } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { usePerspective } from "@/components/PerspectiveProvider"
 
 // Data Structure
 type Role = {
@@ -127,7 +128,7 @@ const experiences: ExperienceItem[] = [
     }
 ]
 
-function ExperienceCard({ item, index }: { item: ExperienceItem; index: number }) {
+function ExperienceCard({ item, index, mode }: { item: ExperienceItem; index: number; mode: "pm" | "dev" }) {
     const ref = useRef<HTMLDivElement>(null)
 
     // Mouse position for spotlight effect
@@ -169,10 +170,16 @@ function ExperienceCard({ item, index }: { item: ExperienceItem; index: number }
                 <div className="relative z-10 flex flex-col md:flex-row gap-6">
                     {/* Company Info - Left Side on Desktop */}
                     <div className="md:w-1/3 flex flex-col border-b md:border-b-0 md:border-r border-white/10 pb-4 md:pb-0 md:pr-6">
-                        <h3 className="text-2xl font-bold text-transparent bg-clip-text bg-linear-to-r from-blue-500 to-purple-500 dark:from-blue-400 dark:to-purple-400">
+                        <h3 className={cn(
+                            "text-2xl font-bold text-transparent bg-clip-text bg-linear-to-r",
+                            mode === "pm" ? "from-purple-500 to-pink-500 dark:from-purple-400 dark:to-pink-400" : "from-blue-500 to-cyan-500 dark:from-blue-400 dark:to-cyan-400"
+                        )}>
                             {item.company}
                         </h3>
-                        <span className="inline-block mt-2 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-600 dark:text-blue-400 w-fit">
+                        <span className={cn(
+                            "inline-block mt-2 px-3 py-1 rounded-full text-xs font-semibold w-fit",
+                            mode === "pm" ? "bg-purple-500/10 text-purple-600 dark:text-purple-400" : "bg-blue-500/10 text-blue-600 dark:text-blue-400"
+                        )}>
                             {item.type}
                         </span>
                     </div>
@@ -180,9 +187,20 @@ function ExperienceCard({ item, index }: { item: ExperienceItem; index: number }
                     {/* Roles - Right Side */}
                     <div className="md:w-2/3 space-y-6">
                         {item.roles.map((role, rIndex) => (
-                            <div key={rIndex} className={cn("relative pl-6 border-l-2 border-white/10", rIndex === item.roles.length - 1 ? "pb-0" : "pb-6")}>
+                            <div key={rIndex} className={cn(
+                                "relative pl-6 border-l-2",
+                                rIndex === item.roles.length - 1 ? "pb-0 border-transparent" : "pb-6 border-white/10"
+                            )}>
                                 {/* Timeline dot */}
-                                <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full border-2 border-background bg-blue-500 dark:bg-purple-500" />
+                                <motion.div
+                                    initial={{ scale: 0 }}
+                                    whileInView={{ scale: 1 }}
+                                    viewport={{ once: true }}
+                                    className={cn(
+                                        "absolute -left-[9px] top-0 h-4 w-4 rounded-full border-2 border-background",
+                                        mode === "pm" ? "bg-purple-500" : "bg-blue-500"
+                                    )}
+                                />
 
                                 <div className="flex flex-wrap gap-2 items-center text-sm text-muted-foreground mb-1">
                                     <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> {role.period}</span>
@@ -216,6 +234,7 @@ function ExperienceCard({ item, index }: { item: ExperienceItem; index: number }
 }
 
 export function Experience() {
+    const { mode } = usePerspective()
     const containerRef = useRef<HTMLDivElement>(null)
     const { scrollYProgress } = useScroll({
         target: containerRef,
@@ -237,15 +256,28 @@ export function Experience() {
                     viewport={{ once: true }}
                     className="text-center mb-16"
                 >
-                    <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">Professional <span className="text-transparent bg-clip-text bg-linear-to-r from-blue-600 to-purple-600">Experience</span></h2>
+                    <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">
+                        {mode === "pm" ? "Product Leadership" : "Professional"}{" "}
+                        <span className={cn(
+                            "text-transparent bg-clip-text bg-linear-to-r",
+                            mode === "pm" ? "from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400" : "from-blue-600 to-cyan-600 dark:from-blue-400 dark:to-cyan-400"
+                        )}>
+                            Experience
+                        </span>
+                    </h2>
                     <p className="text-muted-foreground max-w-2xl mx-auto">
-                        A non-linear journey through my career as a developer and product manager.
+                        {mode === "pm"
+                            ? "A timeline of delivering user-centric products and leading cross-functional teams."
+                            : "A progressive journey through complex software development and technical leadership."}
                     </p>
                 </motion.div>
 
-                <div className="flex flex-col gap-8">
+                {/* Timeline Progress Line connecting everything conceptually */}
+                <div className="absolute left-[50%] top-[300px] bottom-[100px] w-px bg-linear-to-b from-transparent via-primary/20 to-transparent hidden xl:block z-0" />
+
+                <div className="flex flex-col gap-8 relative z-10">
                     {experiences.map((item, index) => (
-                        <ExperienceCard key={index} item={item} index={index} />
+                        <ExperienceCard key={index} item={item} index={index} mode={mode} />
                     ))}
                 </div>
             </div>

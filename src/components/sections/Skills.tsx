@@ -1,25 +1,9 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Code2, Database, Smartphone, Layout, Users, Brain, MessageSquare, Globe, Terminal, Globe2 } from "lucide-react"
-
-const skillCategories = [
-    {
-        title: "Mobile Development",
-        icon: <Smartphone className="w-6 h-6 text-blue-500" />,
-        skills: ["Flutter", "React Native", "Dart", "iOS & Android", "BLoC Pattern", "Clean Architecture", "GetX", "Riverpod"]
-    },
-    {
-        title: "Frontend & Web",
-        icon: <Layout className="w-6 h-6 text-purple-500" />,
-        skills: ["React.js", "Next.js", "TypeScript", "Tailwind CSS", "HTML5/CSS3", "Framer Motion", "Redux", "Three JS"]
-    },
-    {
-        title: "Backend & Tools",
-        icon: <Database className="w-6 h-6 text-pink-500" />,
-        skills: ["Node.js", "PHP", "Firebase", "Supabase", "REST APIs", "GraphQL", "Git/GitHub", "Docker"]
-    }
-]
+import { Users, Brain, MessageSquare, Terminal, Globe2 } from "lucide-react"
+import SkillsCanvas from "@/components/canvas/SkillsCanvas"
+import { usePerspective } from "@/components/PerspectiveProvider"
 
 const softSkills = [
     { name: "Product Management", icon: <Users /> },
@@ -35,6 +19,8 @@ const languages = [
 ]
 
 export function Skills() {
+    const { mode } = usePerspective()
+
     return (
         <section id="skills" className="relative py-24 bg-background overflow-hidden">
 
@@ -51,40 +37,32 @@ export function Skills() {
                     className="text-center mb-16"
                 >
                     <h2 className="text-4xl md:text-5xl font-black mb-6 tracking-tight">
-                        Technical <span className="text-transparent bg-clip-text bg-linear-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">Proficiency</span>
+                        {mode === "pm" ? "Product" : "Technical"}{" "}
+                        <span className="text-transparent bg-clip-text bg-linear-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
+                            {mode === "pm" ? "Ecosystem" : "Proficiency"}
+                        </span>
                     </h2>
                     <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
-                        A comprehensive toolbelt of modern technologies and soft skills honed through freelance and professional experience.
+                        {mode === "pm"
+                            ? "A comprehensive toolkit for driving product strategy, execution, and team alignment."
+                            : "A dynamic toolbelt of modern technologies and frameworks honed through production experience."}
                     </p>
                 </motion.div>
 
-                {/* Hard Skills Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
-                    {skillCategories.map((category, index) => (
-                        <motion.div
-                            key={index}
-                            initial={{ opacity: 0, y: 30 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: index * 0.1, duration: 0.5 }}
-                            className="bg-white/50 dark:bg-zinc-900/50 backdrop-blur-xl border border-gray-200 dark:border-white/10 rounded-3xl p-8 hover:shadow-xl hover:border-blue-500/30 transition-all group"
-                        >
-                            <div className="flex items-center gap-4 mb-6">
-                                <div className="p-3 rounded-2xl bg-gray-100 dark:bg-white/5 group-hover:bg-blue-500/10 transition-colors">
-                                    {category.icon}
-                                </div>
-                                <h3 className="text-xl font-bold">{category.title}</h3>
-                            </div>
-                            <div className="flex flex-wrap gap-2">
-                                {category.skills.map(skill => (
-                                    <span key={skill} className="px-3 py-1.5 text-sm font-medium rounded-lg bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-300 group-hover:border-blue-500/30 transition-colors">
-                                        {skill}
-                                    </span>
-                                ))}
-                            </div>
-                        </motion.div>
-                    ))}
-                </div>
+                {/* 3D Skills Constellation */}
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    className="w-full mb-20 rounded-3xl overflow-hidden border border-gray-200 dark:border-white/10 bg-black/5 dark:bg-white/5 relative shadow-xl"
+                >
+                    <div className="absolute top-4 left-6 z-10 hidden md:block">
+                        <p className="text-sm font-semibold tracking-wider uppercase opacity-50">
+                            Interactive Knowledge Map
+                        </p>
+                    </div>
+                    <SkillsCanvas mode={mode} />
+                </motion.div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
 
