@@ -7,6 +7,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { DebugProvider } from "@/components/DebugProvider";
 import { CodingStatusWidget } from "@/components/ui/CodingStatusWidget";
+import { AIAssistant } from "@/components/ui/AIAssistant";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -47,6 +48,7 @@ export default function RootLayout({
           <DebugProvider>
             <PerspectiveProvider>
               <CodingStatusWidget />
+              <AIAssistant />
               <Navbar />
               <main className="min-h-screen">
                 {children}
