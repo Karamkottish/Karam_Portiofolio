@@ -1,8 +1,9 @@
 "use client"
 
-import { useRef, useState } from "react"
-import { motion, useMotionTemplate, useMotionValue } from "framer-motion"
-import { Github, ExternalLink, Folders, Smartphone, Globe, MessageSquare, Leaf, Rocket } from "lucide-react"
+import { useRef, useState, useEffect } from "react"
+import { createPortal } from "react-dom"
+import { motion, useMotionTemplate, useMotionValue, AnimatePresence } from "framer-motion"
+import { Github, ExternalLink, Folders, Smartphone, Globe, MessageSquare, Leaf, Rocket, PlayCircle, X } from "lucide-react"
 import ProjectCanvas from "@/components/canvas/ProjectCanvas"
 import { cn } from "@/lib/utils"
 import { usePerspective } from "@/components/PerspectiveProvider"
@@ -37,6 +38,7 @@ type Project = {
     android?: string | "coming_soon"
     pmDescription?: string
     pmRole?: string
+    video?: string
 }
 
 // Icon Mapping Helper
@@ -117,7 +119,8 @@ const projects: Project[] = [
         ],
         icon: <Leaf className="w-10 h-10" />,
         color: "from-green-600 to-emerald-600",
-        github: "https://github.com/Karamkottish/BustaniPlus"
+        github: "https://github.com/Karamkottish/BustaniPlus",
+        video: `${process.env.NEXT_PUBLIC_BASE_PATH || ""}/Bustaniapp-video.mp4`
     },
     {
         title: "Karam University",
@@ -229,11 +232,35 @@ const projects: Project[] = [
 function ProjectCard({ project, index, mode }: { project: Project; index: number; mode: "pm" | "dev" }) {
     const mouseX = useMotionValue(0)
     const mouseY = useMotionValue(0)
+    const videoRef = useRef<HTMLVideoElement>(null)
+    const [isHovered, setIsHovered] = useState(false)
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [mounted, setMounted] = useState(false)
+
+    useEffect(() => {
+        setMounted(true)
+    }, [])
 
     function handleMouseMove({ currentTarget, clientX, clientY }: React.MouseEvent) {
         const { left, top } = currentTarget.getBoundingClientRect()
         mouseX.set(clientX - left)
         mouseY.set(clientY - top)
+    }
+
+    function handleMouseEnter() {
+        setIsHovered(true)
+        if (videoRef.current) {
+            // Unmute just in case, though muted attribute is usually enough
+            videoRef.current.play().catch(() => {})
+        }
+    }
+
+    function handleMouseLeave() {
+        setIsHovered(false)
+        if (videoRef.current) {
+            videoRef.current.pause()
+            videoRef.current.currentTime = 0
+        }
     }
 
     return (
@@ -243,11 +270,72 @@ function ProjectCard({ project, index, mode }: { project: Project; index: number
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.5, delay: index * 0.1 }}
             className="group relative h-full"
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
         >
+            {mounted && typeof document !== "undefined" && createPortal(
+                <AnimatePresence>
+                    {isModalOpen && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="fixed inset-0 z-100 flex items-center justify-center bg-black/90 backdrop-blur-md p-4 sm:p-8"
+                            onClick={() => setIsModalOpen(false)}
+                        >
+                            <button 
+                                className="absolute top-6 right-6 p-2 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 rounded-full transition-colors z-101"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setIsModalOpen(false);
+                                }}
+                            >
+                                <X className="w-6 h-6" />
+                            </button>
+                            <motion.div
+                                initial={{ scale: 0.95, opacity: 0, y: 20 }}
+                                animate={{ scale: 1, opacity: 1, y: 0 }}
+                                exit={{ scale: 0.95, opacity: 0, y: 20 }}
+                                className="relative w-full max-w-5xl aspect-video rounded-2xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/10 bg-black"
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                <video
+                                    src={project.video}
+                                    className="w-full h-full"
+                                    controls
+                                    autoPlay
+                                    playsInline
+                                />
+                            </motion.div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>,
+                document.body
+            )}
             <div
                 className="relative h-full overflow-hidden rounded-3xl border border-gray-200 dark:border-white/10 bg-white/50 dark:bg-zinc-900/50 backdrop-blur-xl p-8 hover:shadow-2xl transition-all duration-300 group-hover:-translate-y-2"
                 onMouseMove={handleMouseMove}
             >
+                {/* Background Video */}
+                {project.video && (
+                    <div
+                        className={cn(
+                            "absolute inset-0 z-0 overflow-hidden rounded-3xl transition-opacity duration-700 pointer-events-none",
+                            isHovered ? "opacity-100" : "opacity-0"
+                        )}
+                    >
+                        <video
+                            ref={videoRef}
+                            src={project.video}
+                            className="w-full h-full object-cover opacity-20 dark:opacity-30 mix-blend-overlay"
+                            loop
+                            muted
+                            playsInline
+                            preload="metadata"
+                        />
+                        <div className="absolute inset-0 bg-linear-to-t from-background/80 via-background/40 to-transparent dark:from-zinc-900/80 dark:via-zinc-900/40" />
+                    </div>
+                )}
                 {/* Gradient Glow Effect on Hover */}
                 <motion.div
                     className="pointer-events-none absolute -inset-px opacity-0 transition duration-300 group-hover:opacity-100"
@@ -270,6 +358,23 @@ function ProjectCard({ project, index, mode }: { project: Project; index: number
                             {project.icon}
                         </div>
                         <div className="flex gap-2 relative">
+                            {project.video && (
+                                <div className="group/video relative flex items-center justify-center p-2 rounded-full cursor-pointer hover:bg-black/5 dark:hover:bg-white/10 transition-colors z-20">
+                                    <button
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            setIsModalOpen(true);
+                                        }}
+                                        className="flex items-center justify-center w-full h-full"
+                                    >
+                                        <PlayCircle className="w-5 h-5 text-muted-foreground hover:text-foreground" />
+                                    </button>
+                                    <span className="absolute -top-10 left-1/2 -translate-x-1/2 px-2 py-1 bg-black dark:bg-white text-white dark:text-black text-xs rounded opacity-0 group-hover/video:opacity-100 transition-opacity pointer-events-none whitespace-nowrap font-bold">
+                                        Watch Video
+                                    </span>
+                                </div>
+                            )}
                             {project.android && (
                                 project.android === "coming_soon" ? (
                                     <div className="group/android relative flex items-center justify-center p-2 rounded-full cursor-not-allowed hover:bg-black/5 dark:hover:bg-white/10 transition-colors z-20">
