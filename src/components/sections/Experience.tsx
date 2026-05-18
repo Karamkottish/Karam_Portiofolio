@@ -23,6 +23,18 @@ type ExperienceItem = {
 
 const experiences: ExperienceItem[] = [
     {
+        company: "Sama Tech",
+        type: "Full-time",
+        roles: [
+            {
+                title: "Frontend Developer",
+                period: "May 2026 - Present",
+                location: "Damascus, Syria - Onsite",
+                description: "Building scalable web applications with a focus on clean UI, responsive experiences, and maintainable frontend architecture."
+            }
+        ]
+    },
+    {
         company: "Freelancer.com",
         type: "Freelance",
         roles: [
