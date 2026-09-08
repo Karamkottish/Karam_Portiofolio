@@ -1,9 +1,12 @@
 "use client"
 
 import { motion } from "framer-motion"
+import dynamic from "next/dynamic"
 import { Users, Brain, MessageSquare, Terminal, Globe2 } from "lucide-react"
-import SkillsCanvas from "@/components/canvas/SkillsCanvas"
+import { InViewport } from "@/components/canvas/InViewport"
 import { usePerspective } from "@/components/PerspectiveProvider"
+
+const SkillsCanvas = dynamic(() => import("@/components/canvas/SkillsCanvas"), { ssr: false })
 
 const softSkills = [
     { name: "Product Management", icon: <Users /> },
@@ -61,7 +64,9 @@ export function Skills() {
                             Interactive Knowledge Map
                         </p>
                     </div>
-                    <SkillsCanvas mode={mode} />
+                    <InViewport rootMargin="400px" className="w-full h-[600px] md:h-[800px]">
+                        <SkillsCanvas mode={mode} />
+                    </InViewport>
                 </motion.div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">

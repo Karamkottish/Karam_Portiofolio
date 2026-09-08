@@ -52,6 +52,9 @@ export function Navbar() {
                             <img
                                 src="/Karam_Portiofolio/images/karam-logo.png"
                                 alt="Karam Kottish Logo"
+                                width={40}
+                                height={40}
+                                decoding="async"
                                 className="h-8 md:h-10 w-auto object-contain"
                             />
                         </Link>

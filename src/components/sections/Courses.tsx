@@ -1,16 +1,12 @@
 "use client"
 
-import * as THREE from "three"
-import { useRef, useState, useMemo, useEffect } from "react"
-import { Canvas, useFrame } from "@react-three/fiber"
-import { Text, Image, Html, Float, Environment, OrbitControls, useCursor } from "@react-three/drei"
-import { motion } from "framer-motion-3d"
+import { useState } from "react"
+import dynamic from "next/dynamic"
 import { motion as m, AnimatePresence } from "framer-motion"
-import { useTheme } from "next-themes"
-import { Award, Calendar, BookOpen, X, Download, ShieldCheck, ExternalLink } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { Award, X, Download, ShieldCheck, ExternalLink } from "lucide-react"
+import { InViewport } from "@/components/canvas/InViewport"
 
-type Course = {
+export type Course = {
     title: string
     issuer: string
     date: string
@@ -18,24 +14,35 @@ type Course = {
     skills?: string[]
 }
 
+const CoursesScene = dynamic(() => import("@/components/canvas/CoursesScene"), { ssr: false })
+
 const courses: Course[] = [
-    { title: "AWS Certifications", issuer: "Manara", date: "Dec 2025", skills: ["Cloud Computing", "AWS Services"], image: "/images/courses/AWS-LV1.png" },
+    // To show the certificate image: save the screenshot as
+    // public/images/courses/vica-frontend-development.png then add
+    //   image: "/images/courses/vica-frontend-development.png"
+    { title: "Frontend Development Training", issuer: "Vica Web Solutions", date: "Oct 2025 - Jan 2026", skills: ["React.js", "TypeScript", "Tailwind CSS", "96.2 / 100 · Excellent", "Top 4 in Company"] },
+    { title: "AWS Certifications", issuer: "Manara", date: "Dec 2025", skills: ["Cloud Computing", "AWS Services"], image: "/images/courses/AWS-LV1.webp" },
     { title: "Innovating with Google Cloud AI", issuer: "Simplilearn", date: "Jan 2025" },
-    { title: "Scaling with Google Cloud Operations", issuer: "Google Cloud", date: "Dec 2024" },
+    { title: "Scaling with Google Cloud Operations", issuer: "Simplilearn", date: "Dec 2024" },
     { title: "Master Flutter App Architectures", issuer: "Udemy", date: "Nov 2025", skills: ["Flutter", "Clean Architecture", "MVVM"] },
-    { title: "Frontend Engineering with React", issuer: "Manara", date: "Aug 2025", skills: ["React.js", "GitHub"] },
+    { title: "Frontend Engineering with React", issuer: "Manara", date: "Jul 2025 - Aug 2025", skills: ["React.js", "GitHub"] },
     { title: "Modern Javascript", issuer: "Manara", date: "Sep 2025", skills: ["JavaScript", "API"] },
-    { title: "Flutter - Beginner", issuer: "Merit Center", date: "Jan 2024", skills: ["Mobile Dev"] },
-    { title: "Python Programming", issuer: "Google Cloud", date: "May 2021" },
-    { title: "Intro to Database & SQL", issuer: "Google Cloud", date: "Jun 2021" },
+    { title: "Flutter - Advanced", issuer: "Focal X Agency", date: "Feb 2024 - Jun 2024", skills: ["Flutter", "Dart"] },
+    { title: "Flutter - Beginner", issuer: "Merit Center Mcet", date: "Oct 2023 - Jan 2024", skills: ["Mobile Dev"] },
+    { title: "Python Programming", issuer: "Google Community in Saudi Arabia", date: "May 2021" },
+    { title: "Intro to Database & SQL", issuer: "Google Community in Saudi Arabia", date: "Jun 2021" },
     { title: "Agile Methodology", issuer: "Edraak", date: "Sep 2025", skills: ["Agile"], image: "/images/courses/Agile%20Methodology.pdf" },
-    { title: "Project Management Core", issuer: "Udemy", date: "Dec 2025", image: "/images/courses/Project%20Mnagament.pdf" },
+    { title: "Product Management Core Skills and Concepts", issuer: "Udemy", date: "Oct 2025 - Dec 2025", image: "/images/courses/Project%20Mnagament.pdf" },
     { title: "The Complete Manager", issuer: "Udemy", date: "Feb 2026", skills: ["Management", "Leadership", "Mentoring"], image: "/images/courses/Manager%20Certification.pdf" },
-    { title: "UI UX", issuer: "Edraak", date: "Sep 2025", image: "/images/courses/uiuxen.pdf" },
+    { title: "User Experience Design", issuer: "Edraak", date: "Jul 2025 - Aug 2025", image: "/images/courses/uiuxen.pdf" },
+    { title: "User Experience Research", issuer: "Edraak", date: "Jul 2025 - Aug 2025" },
+    { title: "Ui/Ux", issuer: "Vica Web Solutions", date: "Aug 2024 - Dec 2024" },
     { title: "Intro to Cryptography", issuer: "Univ. of Leeds", date: "Feb 2025" },
+    { title: "Introduction to Computational Thinking", issuer: "The Open University - OpenLearn", date: "Jan 2025" },
+    { title: "GIT Training", issuer: "Simplilearn", date: "Jan 2025" },
     { title: "Ethical hacking 101", issuer: "Simplilearn", date: "Dec 2024" },
-    { title: "Cisco Certified Network Associate", issuer: "Hadara", date: "May 2023" },
-    { title: "Product Management Foundation", issuer: "Edraak", date: "Sep 2025", image: "/images/courses/Product%20Mnagament.jpg" },
+    { title: "Cisco Certified Network Associate", issuer: "Hadara", date: "Mar 2023 - May 2023" },
+    { title: "Product Management Foundation", issuer: "Edraak", date: "Sep 2025", image: "/images/courses/Product%20Mnagament.webp" },
     { title: "Delegation & Mentoring", issuer: "Edraak", date: "Sep 2025", image: "/images/courses/DelegaationCounchingMentoringSkillsEng.pdf" }
 ]
 
@@ -95,10 +102,10 @@ function CertificationModal({ course, onClose }: { course: Course, onClose: () =
                                 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || ''
                                 const src = course.image!.startsWith('http') ? course.image! : `${basePath}${course.image}`
                                 return course.image!.endsWith('.pdf') ? (
-                                    <iframe src={src + "#view=FitH"} className="w-full h-full border-none" />
+                                    <iframe src={src + "#view=FitH"} loading="lazy" className="w-full h-full border-none" />
                                 ) : (
                                     // eslint-disable-next-line @next/next/no-img-element
-                                    <img src={src} alt={course.title} className="w-full h-full object-contain" />
+                                    <img src={src} alt={course.title} loading="lazy" decoding="async" className="w-full h-full object-contain" />
                                 )
                             })() : (
                                 <div className="absolute inset-0 flex items-center justify-center flex-col gap-4">
@@ -127,159 +134,7 @@ function CertificationModal({ course, onClose }: { course: Course, onClose: () =
         </AnimatePresence>
     )
 }
-
-function Card({ course, index, count, radius, onSelect }: { course: Course, index: number, count: number, radius: number, onSelect: (c: Course) => void }) {
-    const angle = (index / count) * Math.PI * 2
-    const x = Math.sin(angle) * radius
-    const z = Math.cos(angle) * radius
-    const rotY = Math.atan2(x, z) // Face outward? or inward?
-
-    // Actually, simple circular arrangement facing center or tangent?
-    // Let's face outward from center: rotation = angle
-
-    const [hovered, setHovered] = useState(false)
-    useCursor(hovered)
-
-    return (
-        <group
-            position={[x, 0, z]}
-            rotation={[0, angle, 0]}
-        >
-            <Html
-                transform
-                occlude
-                distanceFactor={1.5}
-                position={[0, 0, 0]}
-                style={{
-                    transition: 'all 0.2s',
-                    opacity: 1,
-                    transform: `scale(${hovered ? 1.1 : 1})`,
-                }}
-            >
-                <div
-                    onPointerOver={() => setHovered(true)}
-                    onPointerOut={() => setHovered(false)}
-                    onClick={() => onSelect(course)}
-                    className={cn(
-                        "w-64 p-5 rounded-2xl backdrop-blur-md border border-white/20 shadow-xl select-none transition-colors duration-300 cursor-pointer",
-                        "bg-white/80 dark:bg-zinc-900/90 dark:border-white/20"
-                    )}
-                >
-                    <div className="w-10 h-10 mb-4 rounded-full bg-linear-to-br from-blue-500 to-purple-500 flex items-center justify-center shadow-lg">
-                        <Award className="text-white w-5 h-5" />
-                    </div>
-
-                    <h3 className="text-lg font-bold leading-tight mb-2 text-gray-900 dark:text-white">
-                        {course.title}
-                    </h3>
-
-                    <div className="flex justify-between items-center text-xs text-gray-500 dark:text-gray-400 mb-3">
-                        <span className="font-semibold text-blue-600 dark:text-blue-400">
-                            {course.issuer}
-                        </span>
-                        <span className="flex items-center gap-1">
-                            <Calendar className="w-3 h-3" /> {course.date}
-                        </span>
-                    </div>
-
-                    {course.skills && (
-                        <div className="flex flex-wrap gap-1">
-                            {course.skills.map(s => (
-                                <span key={s} className="px-2 py-0.5 text-[10px] rounded-full bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300">
-                                    {s}
-                                </span>
-                            ))}
-                        </div>
-                    )}
-                </div>
-            </Html>
-        </group>
-    )
-}
-
-function Carousel({ radius = 8, count = courses.length, onSelect }: { radius?: number, count?: number, onSelect: (c: Course) => void }) {
-    const group = useRef<any>(null)
-
-    useFrame((state, delta) => {
-        if (group.current) {
-            // Constant subtle Rotation
-            group.current.rotation.y += delta * 0.05
-        }
-    })
-
-    return (
-        <group ref={group}>
-            {courses.map((course, i) => (
-                <Card
-                    key={i}
-                    course={course}
-                    index={i}
-                    count={count}
-                    radius={radius}
-                    onSelect={onSelect}
-                />
-            ))}
-        </group>
-    )
-}
-
-function Particles({ isDark }: { isDark: boolean }) {
-    const mesh = useRef<any>(null)
-    const count = 1000
-
-    const dummy = useMemo(() => new THREE.Object3D(), [])
-    const particles = useMemo(() => {
-        const temp = []
-        for (let i = 0; i < count; i++) {
-            const t = Math.random() * 100
-            const factor = 20 + Math.random() * 100
-            const speed = 0.01 + Math.random() / 200
-            const xFactor = -50 + Math.random() * 100
-            const yFactor = -50 + Math.random() * 100
-            const zFactor = -50 + Math.random() * 100
-            temp.push({ t, factor, speed, xFactor, yFactor, zFactor, mx: 0, my: 0 })
-        }
-        return temp
-    }, [count])
-
-    useFrame((state, delta) => {
-        particles.forEach((particle, i) => {
-            let { t, factor, speed, xFactor, yFactor, zFactor } = particle
-            t = particle.t += speed / 2
-            const a = Math.cos(t) + Math.sin(t * 1) / 10
-            const b = Math.sin(t) + Math.cos(t * 2) / 10
-            const s = Math.cos(t)
-
-            dummy.position.set(
-                (particle.mx / 10) * a + xFactor + Math.cos((t / 10) * factor) + (Math.sin(t * 1) * factor) / 10,
-                (particle.my / 10) * b + yFactor + Math.sin((t / 10) * factor) + (Math.cos(t * 2) * factor) / 10,
-                (particle.my / 10) * b + zFactor + Math.cos((t / 10) * factor) + (Math.sin(t * 3) * factor) / 10
-            )
-            dummy.scale.setScalar(s)
-            dummy.rotation.set(s * 5, s * 5, s * 5)
-            dummy.updateMatrix()
-            mesh.current.setMatrixAt(i, dummy.matrix)
-        })
-        mesh.current.instanceMatrix.needsUpdate = true
-    })
-
-    return (
-        <instancedMesh ref={mesh} args={[undefined, undefined, count]}>
-            <dodecahedronGeometry args={[0.2, 0]} />
-            <meshStandardMaterial
-                color={isDark ? "#c4b5fd" : "#8b5cf6"}
-                roughness={isDark ? 0.2 : 0.5}
-                metalness={isDark ? 0.8 : 0.5}
-                transparent
-                opacity={isDark ? 0.6 : 0.4}
-            />
-        </instancedMesh>
-    )
-}
-
 export function Courses() {
-    const { resolvedTheme } = useTheme()
-    const isDark = resolvedTheme === "dark"
     const [selectedCourse, setSelectedCourse] = useState<Course | null>(null)
 
     return (
@@ -291,27 +146,9 @@ export function Courses() {
                 <p className="text-muted-foreground text-sm md:text-base">Drag to explore certifications</p>
             </div>
 
-            <div className="absolute inset-0 z-0">
-                <Canvas camera={{ position: [0, 1.0, 10.5], fov: 60 }} dpr={[1, 2]}>
-                    <fog attach="fog" args={[isDark ? '#000' : '#fff', 15, 25]} />
-                    <ambientLight intensity={isDark ? 1.5 : 0.5} />
-                    <pointLight position={[10, 10, 10]} intensity={isDark ? 2 : 1} color={isDark ? "#818cf8" : "blue"} />
-
-                    <group position={[0, -1, 0]}>
-                        <Carousel radius={8} onSelect={setSelectedCourse} />
-                    </group>
-
-                    <Particles isDark={isDark} />
-
-                    <OrbitControls
-                        enableZoom={false}
-                        enablePan={false}
-                        minPolarAngle={Math.PI / 2 - 0.1}
-                        maxPolarAngle={Math.PI / 2 + 0.1}
-                        rotateSpeed={0.5}
-                    />
-                </Canvas>
-            </div>
+            <InViewport rootMargin="400px" className="absolute inset-0 z-0">
+                <CoursesScene courses={courses} onSelect={setSelectedCourse} />
+            </InViewport>
 
             {/* Gradient overlays for depth */}
             <div className="absolute inset-y-0 left-0 w-32 bg-linear-to-r from-background to-transparent pointer-events-none" />

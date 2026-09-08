@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useMemo } from "react"
+import { useRef, useState } from "react"
 import { Canvas, useFrame } from "@react-three/fiber"
 import { Points, PointMaterial, Float } from "@react-three/drei"
 import * as THREE from "three"
@@ -10,9 +10,9 @@ function Helix({ isDark }: { isDark: boolean }) {
     const ref = useRef<any>(null)
 
     // Generate DNA Helix points
-    const points = useMemo(() => {
+    const [points] = useState(() => {
         const temp = []
-        const count = 100
+        const count = 64
         const radius = 2
         const height = 10
 
@@ -37,7 +37,7 @@ function Helix({ isDark }: { isDark: boolean }) {
         }
 
         // Random scattered particles for "Dust"
-        for (let i = 0; i < 50; i++) {
+        for (let i = 0; i < 20; i++) {
             temp.push(
                 (Math.random() - 0.5) * 8,
                 (Math.random() - 0.5) * 10,
@@ -46,7 +46,7 @@ function Helix({ isDark }: { isDark: boolean }) {
         }
 
         return new Float32Array(temp)
-    }, [])
+    })
 
     useFrame((state, delta) => {
         if (ref.current) {
@@ -76,10 +76,10 @@ function Connections({ isDark }: { isDark: boolean }) {
     const ref = useRef<any>(null)
 
     // Create lines connecting strands
-    const lineGeo = useMemo(() => {
+    const [lineGeo] = useState(() => {
         const geometry = new THREE.BufferGeometry()
         const vertices = []
-        const count = 50 // Fewer connections than points
+        const count = 30 // Fewer connections than points
         const radius = 2
         const height = 10
 
@@ -102,7 +102,7 @@ function Connections({ isDark }: { isDark: boolean }) {
 
         geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3))
         return geometry
-    }, [])
+    })
 
     useFrame((state, delta) => {
         if (ref.current) {
@@ -130,7 +130,7 @@ export default function EducationCanvas() {
 
     return (
         <div className="absolute inset-0 w-full h-full pointer-events-none opacity-60">
-            <Canvas camera={{ position: [0, 0, 8], fov: 60 }}>
+            <Canvas camera={{ position: [0, 0, 8], fov: 60 }} dpr={[1, 1.5]}>
                 <ambientLight intensity={0.5} />
                 <Float speed={2} rotationIntensity={0.5} floatIntensity={0.5}>
                     <Helix isDark={isDark} />

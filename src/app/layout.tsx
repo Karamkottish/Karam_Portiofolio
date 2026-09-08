@@ -6,8 +6,7 @@ import { PerspectiveProvider } from "@/components/PerspectiveProvider";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { DebugProvider } from "@/components/DebugProvider";
-import { CodingStatusWidget } from "@/components/ui/CodingStatusWidget";
-import { AIAssistant } from "@/components/ui/AIAssistant";
+import { DeferredOverlays } from "@/components/ui/DeferredOverlays";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,8 +19,29 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Karam Kottish | Product Manager & Full Stack Developer",
-  description: "Portfolio of Karam Kottish, a Product Manager and Full Stack Developer.",
+  title: "Karam Kottish — Full-Stack Software Engineer & Product Manager",
+  description:
+    "Karam Kottish is a Full-Stack Software Engineer and Product Manager in Riyadh with 3+ years building scalable web and mobile products in Flutter, React Native, Next.js, TypeScript and FastAPI. Available for full-time and freelance work.",
+  keywords: [
+    "Karam Kottish",
+    "Full-Stack Software Engineer",
+    "Product Manager",
+    "Flutter Developer",
+    "React Native Developer",
+    "Next.js",
+    "TypeScript",
+    "FastAPI",
+    "Riyadh",
+    "Saudi Arabia",
+  ],
+  authors: [{ name: "Karam Kottish" }],
+  openGraph: {
+    title: "Karam Kottish — Full-Stack Software Engineer & Product Manager",
+    description:
+      "3+ years building scalable web and mobile products in Flutter, React Native, Next.js and FastAPI. Led frontend teams and shipped 10+ products to production.",
+    type: "website",
+    locale: "en_US",
+  },
   icons: {
     icon: "/images/karam-logo.png",
     shortcut: "/images/karam-logo.png",
@@ -47,8 +67,7 @@ export default function RootLayout({
         >
           <DebugProvider>
             <PerspectiveProvider>
-              <CodingStatusWidget />
-              <AIAssistant />
+              <DeferredOverlays />
               <Navbar />
               <main className="min-h-screen">
                 {children}

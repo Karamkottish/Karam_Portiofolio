@@ -2,10 +2,13 @@
 
 import { useRef } from "react"
 import { motion, useScroll, useTransform } from "framer-motion"
+import dynamic from "next/dynamic"
 import { GraduationCap, School, Calendar, MapPin, Award, BookOpen } from "lucide-react"
-import EducationCanvas from "@/components/canvas/EducationCanvas"
+import { InViewport } from "@/components/canvas/InViewport"
 import { cn } from "@/lib/utils"
 import { usePerspective } from "@/components/PerspectiveProvider"
+
+const EducationCanvas = dynamic(() => import("@/components/canvas/EducationCanvas"), { ssr: false })
 // Import icons for the specific institutions (using generic lucide for now, but conceptualizing placeholders)
 
 type EducationItem = {
@@ -13,6 +16,7 @@ type EducationItem = {
     degree: string
     years: string
     skills: string
+    location: string
     logo?: any // Component or string
     color: string
 }
@@ -20,16 +24,18 @@ type EducationItem = {
 const educationData: EducationItem[] = [
     {
         school: "Al-Sham Private University",
-        degree: "Bachelor of Engineering, Information Technology",
-        years: "2020 - 2025",
+        degree: "Bachelor of Engineering, Informatics Engineering",
+        years: "2020 - Present",
         skills: "Gitlab, Coding Standards and +12 skills",
+        location: "Damascus, Syria",
         color: "from-amber-400 to-orange-500"
     },
     {
         school: "Future Window International School",
         degree: "High School Diploma, High School/Secondary Diplomas and Certificates",
-        years: "May 2018 - May 2018",
+        years: "May 2018",
         skills: "Scientific Section",
+        location: "Riyadh, Saudi Arabia",
         color: "from-blue-400 to-indigo-500"
     }
 ]
@@ -109,7 +115,7 @@ function EducationCard({ item, index, mode }: { item: EducationItem, index: numb
                             <Calendar className="w-3 h-3" /> {item.years}
                         </span>
                         <span className="flex items-center gap-1 bg-white/5 px-2 py-1 rounded-full border border-white/5">
-                            <MapPin className="w-3 h-3" /> Damascus, Syria
+                            <MapPin className="w-3 h-3" /> {item.location}
                         </span>
                     </div>
 
@@ -140,7 +146,9 @@ export function Education() {
 
     return (
         <section id="education" className="relative min-h-screen py-32 overflow-hidden">
-            <EducationCanvas />
+            <InViewport rootMargin="400px" className="absolute inset-0 w-full h-full">
+                <EducationCanvas />
+            </InViewport>
 
             <div className="relative max-w-5xl mx-auto px-6 z-10">
                 <motion.div

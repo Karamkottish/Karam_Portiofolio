@@ -19,7 +19,7 @@ function Globe({ isDark }: { isDark: boolean }) {
         <group rotation={[0, 0, Math.PI / 6]}>
             {/* Wireframe Globe */}
             <points ref={meshRef}>
-                <sphereGeometry args={[2.5, 64, 64]} />
+                <sphereGeometry args={[2.5, 40, 40]} />
                 <pointsMaterial
                     color={isDark ? "#3b82f6" : "#2563eb"}
                     size={0.02}
@@ -58,12 +58,12 @@ function Satellites({ isDark }: { isDark: boolean }) {
         <group ref={group}>
             {/* Ring 1 */}
             <mesh rotation={[Math.PI / 3, 0, 0]}>
-                <torusGeometry args={[3.5, 0.01, 16, 100]} />
+                <torusGeometry args={[3.5, 0.01, 12, 48]} />
                 <meshBasicMaterial color={isDark ? "#a855f7" : "#d8b4fe"} transparent opacity={0.3} />
             </mesh>
             {/* Ring 2 */}
             <mesh rotation={[-Math.PI / 3, 0, 0]}>
-                <torusGeometry args={[4, 0.01, 16, 100]} />
+                <torusGeometry args={[4, 0.01, 12, 48]} />
                 <meshBasicMaterial color={isDark ? "#2dd4bf" : "#99f6e4"} transparent opacity={0.3} />
             </mesh>
         </group>
@@ -77,7 +77,7 @@ export default function ContactCanvas() {
 
     return (
         <div className="absolute inset-0 w-full h-full pointer-events-none fade-in">
-            <Canvas camera={{ position: [0, 0, 7], fov: 45 }}>
+            <Canvas camera={{ position: [0, 0, 7], fov: 45 }} dpr={[1, 1.5]}>
                 <ambientLight intensity={0.5} />
                 <pointLight position={[10, 10, 10]} intensity={1} />
 

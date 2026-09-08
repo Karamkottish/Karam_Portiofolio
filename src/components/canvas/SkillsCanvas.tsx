@@ -6,8 +6,10 @@ import { Text, OrbitControls, FlyControls } from "@react-three/drei"
 import * as THREE from "three"
 import { useTheme } from "next-themes"
 
+const WHITE = new THREE.Color("#fff")
+
 function Word({ children, position, color }: { children: string, position: THREE.Vector3, color: string }) {
-    const colorRef = new THREE.Color(color)
+    const colorRef = useMemo(() => new THREE.Color(color), [color])
     const ref = useRef<any>(null)
     const [hovered, setHovered] = useState(false)
 
@@ -15,7 +17,7 @@ function Word({ children, position, color }: { children: string, position: THREE
     useFrame((state, delta) => {
         if (ref.current) {
             ref.current.material.color.lerp(
-                hovered ? new THREE.Color("#fff") : colorRef,
+                hovered ? WHITE : colorRef,
                 delta * 5
             )
             // Gently float
@@ -143,7 +145,7 @@ export default function SkillsCanvas({ mode }: { mode: "pm" | "dev" }) {
 
     return (
         <div className="w-full h-[600px] md:h-[800px] relative cursor-grab active:cursor-grabbing">
-            <Canvas camera={{ position: [0, 0, 15], fov: 60 }} dpr={[1, 2]}>
+            <Canvas camera={{ position: [0, 0, 15], fov: 60 }} dpr={[1, 1.5]}>
                 <fog attach="fog" args={[isDark ? '#09090b' : '#ffffff', 10, 25]} />
                 <ambientLight intensity={isDark ? 0.8 : 0.5} />
                 <Cloud mode={mode} isDark={isDark} />

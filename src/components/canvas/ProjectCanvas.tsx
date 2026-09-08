@@ -9,8 +9,9 @@ import * as THREE from "three"
 function StarField(props: any) {
     const ref = useRef<any>(null)
     const [sphere] = useState(() => {
-        const positions = new Float32Array(5000 * 3);
-        for (let i = 0; i < 5000; i++) {
+        const COUNT = 2000;
+        const positions = new Float32Array(COUNT * 3);
+        for (let i = 0; i < COUNT; i++) {
             const r = 1.5 * Math.cbrt(Math.random());
             const theta = Math.random() * 2 * Math.PI;
             const phi = Math.acos(2 * Math.random() - 1);
@@ -51,7 +52,7 @@ function StarField(props: any) {
 export default function ProjectCanvas() {
     return (
         <div className="w-full h-full absolute inset-0 -z-10">
-            <Canvas camera={{ position: [0, 0, 1] }}>
+            <Canvas camera={{ position: [0, 0, 1] }} dpr={[1, 1.5]}>
                 <Suspense fallback={null}>
                     <StarField />
                 </Suspense>

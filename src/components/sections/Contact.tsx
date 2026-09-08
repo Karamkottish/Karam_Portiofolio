@@ -2,10 +2,13 @@
 
 import { useState, useRef } from "react"
 import { motion } from "framer-motion"
+import dynamic from "next/dynamic"
 import emailjs from "@emailjs/browser"
 import { Send, Loader2, Mail, User, MessageSquare } from "lucide-react"
-import ContactCanvas from "@/components/canvas/ContactCanvas"
+import { InViewport } from "@/components/canvas/InViewport"
 import { cn } from "@/lib/utils"
+
+const ContactCanvas = dynamic(() => import("@/components/canvas/ContactCanvas"), { ssr: false })
 
 export function Contact() {
     const formRef = useRef<HTMLFormElement>(null)
@@ -75,7 +78,9 @@ export function Contact() {
 
     return (
         <section id="contact" className="relative min-h-screen flex items-center justify-center overflow-hidden py-20">
-            <ContactCanvas />
+            <InViewport rootMargin="400px" className="absolute inset-0 w-full h-full">
+                <ContactCanvas />
+            </InViewport>
 
             <div className="relative z-10 container mx-auto px-4 flex flex-col md:flex-row items-center justify-center gap-10 md:gap-20">
 

@@ -23,22 +23,22 @@ const mockAIResponse = (input: string): Promise<string> => {
       
       // Education / Graduation / University
       if (q.includes("graduate") || q.includes("university") || q.includes("college") || q.includes("study") || q.includes("education") || q.includes("degree")) {
-        return resolve("Karam graduated from Al-Sham Private University in Damascus, Syria with a Bachelor of Engineering in Information Technology.");
+        return resolve("Karam is a 5th-year Informatics Engineering student at Al-Sham Private University in Damascus, Syria, pursuing his Bachelor of Engineering.");
       }
-      
+
       // Year / Dates
       if (q.includes("year") || q.includes("when did he")) {
-        return resolve("He attended Al-Sham Private University from 2020 to 2025. In his professional career, he has over 3+ years of experience.");
+        return resolve("He has attended Al-Sham Private University since 2020 and is currently in his 5th year. In his professional career, he has over 3+ years of experience.");
       }
-      
+
       // Role / Current Job / What does he do
       if (q.includes("role") || q.includes("job") || q.includes("work") || q.includes("position") || q.includes("current") || q.includes("what does he do")) {
-        return resolve("Karam is currently working multiple exciting roles! He is a Full Stack Engineer at NPT Solutions, a Product Manager & Flutter Team Leader at Paws Pal Connect, and a Freelance Full-stack Developer.");
+        return resolve("Karam is currently working multiple exciting roles! He is a Full Stack Developer at Sama Tech, a Full-Stack Developer at Paws Pal Connect, a Product Manager at Tariquk, and a Freelance Full-stack Developer.");
       }
 
       // Experience / History
       if (q.includes("experience") || q.includes("history") || q.includes("companies") || q.includes("where has he worked")) {
-        return resolve("Karam has 3+ years of experience. He's worked at NPT Solutions, Paws Pal Connect, Vica Web Solutions, Springer Capital, SoftTechSyria, and focal X agency.");
+        return resolve("Karam has 3+ years of experience. He's worked at Sama Tech, Tariquk, Freelancer.com, NPT Solutions, Paws Pal Connect, Vica Web Solutions, Springer Capital, SoftTechSyria, and focal X agency.");
       }
 
       // Location

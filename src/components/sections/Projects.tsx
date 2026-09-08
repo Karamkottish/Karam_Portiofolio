@@ -3,10 +3,13 @@
 import { useRef, useState, useEffect } from "react"
 import { createPortal } from "react-dom"
 import { motion, useMotionTemplate, useMotionValue, AnimatePresence } from "framer-motion"
+import dynamic from "next/dynamic"
 import { Github, ExternalLink, Folders, Smartphone, Globe, MessageSquare, Leaf, Rocket, PlayCircle, X } from "lucide-react"
-import ProjectCanvas from "@/components/canvas/ProjectCanvas"
+import { InViewport } from "@/components/canvas/InViewport"
 import { cn } from "@/lib/utils"
 import { usePerspective } from "@/components/PerspectiveProvider"
+
+const ProjectCanvas = dynamic(() => import("@/components/canvas/ProjectCanvas"), { ssr: false })
 
 // Icons
 import {
@@ -157,11 +160,11 @@ const projects: Project[] = [
     {
         title: "Chatly",
         role: "Backend Developer",
-        year: "2025",
-        description: "An exclusive, real-time messaging platform designed for seamless private communication. Engineered a robust backend using PHP, implementing secure authentication and optimized database interactions for instant message delivery.",
+        year: "2026",
+        description: "An exclusive, real-time messaging platform designed for seamless private communication. Engineered a robust backend using PHP with a Next.js frontend, implementing secure authentication and optimized database interactions for instant message delivery.",
         techStack: [
             { name: "PHP", icon: FaPhp },
-            { name: "MySQL", icon: SiMysql },
+            { name: "Next.js", icon: TbBrandNextjs },
             { name: "Real-time", icon: TbApi },
             { name: "Secure Auth", icon: MdArchitecture }
         ],
@@ -200,13 +203,14 @@ const projects: Project[] = [
         github: "https://gitlab.com/revonix1/revonix-frontend"
     },
     {
-        title: "E-commerce Clone",
+        title: "Shein Replica App",
         role: "Solo Developer",
-        year: "2023",
-        description: "Catalog, cart, payments, responsive web + mobile. A deep dive into complex state management and payment flows.",
+        year: "2024",
+        description: "Developed a mobile application that replicates the shopping experience of Shein, offering users an intuitive interface to browse and purchase fashion items with ease.",
         techStack: [
-            { name: "Stripe", icon: FaStripe },
+            { name: "Flutter", icon: SiFlutter },
             { name: "Firebase", icon: SiFirebase },
+            { name: "Stripe", icon: FaStripe },
             { name: "Responsive", icon: Smartphone as React.ComponentType<any> }
         ],
         icon: <Smartphone className="w-10 h-10" />,
@@ -331,7 +335,7 @@ function ProjectCard({ project, index, mode }: { project: Project; index: number
                             loop
                             muted
                             playsInline
-                            preload="metadata"
+                            preload="none"
                         />
                         <div className="absolute inset-0 bg-linear-to-t from-background/80 via-background/40 to-transparent dark:from-zinc-900/80 dark:via-zinc-900/40" />
                     </div>
@@ -462,9 +466,9 @@ export function Projects() {
     return (
         <section id="projects" className="relative py-24 min-h-screen bg-background overflow-hidden">
             {/* 3D Background */}
-            <div className="absolute inset-0 z-0">
+            <InViewport rootMargin="400px" className="absolute inset-0 z-0">
                 <ProjectCanvas />
-            </div>
+            </InViewport>
 
             <div className="absolute inset-0 bg-background/50 dark:bg-background/80 backdrop-blur-[1px] z-0" />
 

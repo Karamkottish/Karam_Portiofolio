@@ -27,10 +27,23 @@ const experiences: ExperienceItem[] = [
         type: "Full-time",
         roles: [
             {
-                title: "Frontend Developer",
-                period: "May 2026 - Present",
+                title: "Full Stack Developer",
+                period: "Apr 2026 - Present",
                 location: "Damascus, Syria - Onsite",
-                description: "Building scalable web applications with a focus on clean UI, responsive experiences, and maintainable frontend architecture."
+                description: "Building client websites end-to-end — frontend, backend (Node.js), and Flutter — based on client needs.",
+                skills: ["Frontend", "Node.js", "Flutter"]
+            }
+        ]
+    },
+    {
+        company: "Tariquk | طريقك",
+        type: "Freelance",
+        roles: [
+            {
+                title: "Product Manager",
+                period: "Aug 2026 - Present",
+                location: "Riyadh, Saudi Arabia - Remote",
+                description: "Managing a team of 6 members."
             }
         ]
     },
@@ -69,19 +82,20 @@ const experiences: ExperienceItem[] = [
         type: "Full-time",
         roles: [
             {
-                title: "Product Manager",
-                period: "Dec 2025 - Present",
+                title: "Full-Stack Developer (Promoted)",
+                period: "Aug 2025 - Aug 2026",
+                description: "Transitioned from Team Lead to Full-Stack Developer to oversee end-to-end development of pet-tech solutions. Architecting scalable backends using FastAPI, integrating Next.js/React frontends with internal APIs, and maintaining product vision while leading technical execution.",
                 skills: ["Front-End Development", "Mobile Application Development"]
             },
             {
-                title: "Flutter TeamLeader Developer Intern",
-                period: "Sep 2025 - Present",
+                title: "Associate Software Engineer (Flutter TeamLeader)",
+                period: "Sep 2025 - Aug 2026",
                 description: "Developing the app from Scratch",
                 skills: ["GitHub", "Firebase"]
             },
             {
                 title: "Social Media Admin",
-                period: "Sep 2025 - Dec 2025",
+                period: "Sep 2025 - Nov 2025",
                 description: "Managed Facebook and LinkedIn pages to strengthen brand presence and engagement."
             }
         ]
@@ -104,11 +118,11 @@ const experiences: ExperienceItem[] = [
         type: "Full-time",
         roles: [
             {
-                title: "Frontend Web Developer",
-                period: "Aug 2025 - Nov 2025",
+                title: "Frontend Software Engineer - Team Lead",
+                period: "Jan 2025 - Nov 2025",
                 location: "Chicago, IL - Remote",
-                description: "Contributed to building responsive web apps with React/Next.js and TypeScript.",
-                skills: ["React.js", "Next.js", "TypeScript"]
+                description: "Led frontend development using React.js, Next.js, and TypeScript for enterprise-grade web applications. Integrated REST & GraphQL APIs and ensured WCAG accessibility compliance.",
+                skills: ["React.js", "Next.js", "TypeScript", "GraphQL"]
             }
         ]
     },
@@ -131,7 +145,7 @@ const experiences: ExperienceItem[] = [
         roles: [
             {
                 title: "Flutter Developer",
-                period: "Feb 2023 - Jun 2024",
+                period: "Feb 2024 - Jun 2024",
                 location: "Damascus - Remote",
                 description: "Completed an advanced program in Flutter and Dart. Applied advanced state management patterns (Provider, Riverpod, GetX, BLoC).",
                 skills: ["GitHub", "Firebase", "REST APIs", "Bloc"]

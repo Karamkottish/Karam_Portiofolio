@@ -1,10 +1,13 @@
 "use client"
 
 import { motion } from "framer-motion"
-import HeroCanvas from "@/components/canvas/HeroCanvas"
+import dynamic from "next/dynamic"
+import { InViewport } from "@/components/canvas/InViewport"
 import { cn } from "@/lib/utils"
 import { ArrowDown, Download } from "lucide-react"
 import { usePerspective } from "@/components/PerspectiveProvider"
+
+const HeroCanvas = dynamic(() => import("@/components/canvas/HeroCanvas"), { ssr: false })
 
 export function Hero() {
     const { mode } = usePerspective()
@@ -12,9 +15,9 @@ export function Hero() {
     return (
         <section id="hero" className="relative h-screen w-full flex items-center justify-center overflow-hidden bg-background">
             {/* 3D Background */}
-            <div className="absolute inset-0 w-full h-full z-0 opacity-80 dark:opacity-60">
+            <InViewport once rootMargin="600px" className="absolute inset-0 w-full h-full z-0 opacity-80 dark:opacity-60">
                 <HeroCanvas />
-            </div>
+            </InViewport>
 
             {/* Content Overlay */}
             <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -47,13 +50,13 @@ export function Hero() {
                         <p>
                             {mode === "pm"
                                 ? <span className="text-purple-600 dark:text-purple-400 font-bold">Product Manager</span>
-                                : <span className="text-blue-600 dark:text-blue-400 font-bold">Full Stack Developer</span>}
-                            {" "}& {mode === "pm" ? "Technical Lead" : "Product Thinker"} with <span className="text-foreground font-semibold border-b-2 border-primary/20">3+ years</span> of experience.
+                                : <span className="text-blue-600 dark:text-blue-400 font-bold">Full-Stack Software Engineer</span>}
+                            {" "}& {mode === "pm" ? "Technical Lead" : "Product Manager"} with <span className="text-foreground font-semibold border-b-2 border-primary/20">3+ years</span> of experience.
                         </p>
                         <p className="text-base md:text-lg opacity-90 max-w-2xl mx-auto leading-relaxed h-[60px] md:h-auto">
                             {mode === "pm"
-                                ? "Specializing in translating business requirements into user-centric digital products. I lead cross-functional teams to drive roadmap execution and deliver measurable impact."
-                                : "Specializing in building scalable, high-performance web and mobile applications. I architect robust solutions from database design to seamless interactive 3D frontends."}
+                                ? "I turn business goals into shipped roadmaps — leading discovery, specs, and cross-functional delivery. My last launch drove a 32% lift in user engagement across a cross-platform pet-care platform."
+                                : "I build and ship scalable web and mobile products end-to-end — Flutter, React Native, Next.js and FastAPI. I've led frontend teams, tuned enterprise apps for performance and accessibility, and delivered 10+ products to production."}
                         </p>
 
                         <div className="flex flex-wrap justify-center gap-3 pt-4">
@@ -93,7 +96,7 @@ export function Hero() {
                         View Work
                     </a>
                     <a
-                        href="/Karam_Portiofolio/Cv/CV9.pdf"
+                        href="/Karam_Portiofolio/Cv/CV10.pdf"
                         download="Karam_Kottish_CV.pdf"
                         className="group relative px-8 py-4 rounded-full border border-foreground/10 bg-background/30 backdrop-blur-md overflow-hidden transition-all duration-300 hover:scale-105 hover:border-foreground/20 hover:shadow-[0_0_40px_-10px_rgba(59,130,246,0.5)] dark:hover:shadow-[0_0_40px_-10px_rgba(59,130,246,0.3)]"
                     >

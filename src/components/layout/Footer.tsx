@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Phone, Mail, Linkedin, Copy, ExternalLink, Heart } from "lucide-react"
+import { Phone, Mail, Linkedin, Github, Copy, ExternalLink, Heart } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 // WhatsApp Icon Component (Custom SVG for better brand accuracy)
@@ -20,11 +20,11 @@ function WhatsAppIcon({ className }: { className?: string }) {
 const socialLinks = [
     {
         name: "Call Me",
-        value: "+966 59 773 3571",
-        label: "+966 59 773 3571",
+        value: "+963 999 660 5715",
+        label: "+963 999 660 5715",
         icon: Phone,
         color: "hover:bg-green-500/10 hover:text-green-500 hover:border-green-500/20",
-        action: () => window.open("tel:+966597733571")
+        action: () => window.open("tel:+9639996605715")
     },
     {
         name: "WhatsApp",
@@ -51,7 +51,15 @@ const socialLinks = [
         label: "View Profile",
         icon: Linkedin,
         color: "hover:bg-blue-600/10 hover:text-blue-600 hover:border-blue-600/20",
-        action: () => window.open("https://www.linkedin.com/in/karam-kottish/", "_blank") // Using predicted handle, user can update
+        action: () => window.open("https://www.linkedin.com/in/karam-kottish/", "_blank")
+    },
+    {
+        name: "GitHub",
+        value: "View GitHub",
+        label: "View GitHub",
+        icon: Github,
+        color: "hover:bg-gray-500/10 hover:text-gray-300 hover:border-gray-500/20",
+        action: () => window.open("https://github.com/Karamkottish", "_blank")
     }
 ]
 
@@ -75,12 +83,16 @@ export function Footer() {
                             <img
                                 src="/Karam_Portiofolio/images/karam-logo.png"
                                 alt="Karam Kottish Logo"
+                                width={80}
+                                height={80}
+                                loading="lazy"
+                                decoding="async"
                                 className="h-16 md:h-20 w-auto object-contain"
                             />
                         </motion.div>
 
                         <p className="text-muted-foreground text-lg max-w-md mx-auto lg:mx-0">
-                            Building the future with code, creativity, and a touch of 3D magic. Based in Riyadh, Saudi Arabia.
+                            Full-Stack Software Engineer & Product Manager based in Riyadh, Saudi Arabia. I build scalable web and mobile products with Flutter, React Native, Next.js and FastAPI — available for full-time and freelance work.
                         </p>
                     </div>
 
