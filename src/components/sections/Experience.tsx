@@ -2,7 +2,8 @@
 
 import { useRef, useState } from "react"
 import { motion, useScroll, useTransform, useSpring, useMotionTemplate, useMotionValue } from "framer-motion"
-import { Briefcase, Calendar, MapPin, ChevronRight, Activity } from "lucide-react"
+import { Briefcase, Calendar, MapPin, ChevronRight, Activity, Globe } from "lucide-react"
+import { FaApple } from "react-icons/fa"
 import { cn } from "@/lib/utils"
 import { usePerspective } from "@/components/PerspectiveProvider"
 
@@ -19,12 +20,15 @@ type ExperienceItem = {
     company: string
     roles: Role[]
     type: string // Full-time, Freelance, etc.
+    iosApp?: { name: string; url: string } // App Store link for an app built at this company
+    website?: { name: string; url: string } // Company / product website
 }
 
 const experiences: ExperienceItem[] = [
     {
         company: "Sama Tech",
         type: "Full-time",
+        iosApp: { name: "Sama BTU", url: "https://apps.apple.com/sa/app/sama-btu/id6819293132" },
         roles: [
             {
                 title: "Full Stack Developer",
@@ -38,6 +42,7 @@ const experiences: ExperienceItem[] = [
     {
         company: "Tariquk | طريقك",
         type: "Freelance",
+        website: { name: "tariquk.com", url: "https://tariquk.com/" },
         roles: [
             {
                 title: "Product Manager",
@@ -208,6 +213,36 @@ function ExperienceCard({ item, index, mode }: { item: ExperienceItem; index: nu
                         )}>
                             {item.type}
                         </span>
+                        {(item.iosApp || item.website) && (
+                            <div className="mt-4 flex flex-wrap gap-2">
+                                {item.iosApp && (
+                                    <a
+                                        href={item.iosApp.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        aria-label={`Open ${item.iosApp.name} on the App Store`}
+                                        title={`${item.iosApp.name} on the App Store`}
+                                        className="inline-flex items-center gap-2 w-fit rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-foreground transition-colors hover:bg-primary/10 hover:text-primary"
+                                    >
+                                        <FaApple className="h-4 w-4" />
+                                        {item.iosApp.name}
+                                    </a>
+                                )}
+                                {item.website && (
+                                    <a
+                                        href={item.website.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        aria-label={`Visit ${item.website.name}`}
+                                        title={`Visit ${item.website.name}`}
+                                        className="inline-flex items-center gap-2 w-fit rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-foreground transition-colors hover:bg-primary/10 hover:text-primary"
+                                    >
+                                        <Globe className="h-4 w-4" />
+                                        {item.website.name}
+                                    </a>
+                                )}
+                            </div>
+                        )}
                     </div>
 
                     {/* Roles - Right Side */}
