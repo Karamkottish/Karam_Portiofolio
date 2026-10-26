@@ -18,6 +18,9 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+// metadata.icons URLs are not prefixed with basePath, so add it for GitHub Pages
+const logoUrl = `${process.env.NEXT_PUBLIC_BASE_PATH || ""}/images/karam-logo.png`
+
 export const metadata: Metadata = {
   title: "Karam Kottish — Full-Stack Software Engineer & Product Manager",
   description:
@@ -43,9 +46,9 @@ export const metadata: Metadata = {
     locale: "en_US",
   },
   icons: {
-    icon: "/images/karam-logo.png",
-    shortcut: "/images/karam-logo.png",
-    apple: "/images/karam-logo.png",
+    icon: logoUrl,
+    shortcut: logoUrl,
+    apple: logoUrl,
   },
 };
 
