@@ -20,11 +20,11 @@ function WhatsAppIcon({ className }: { className?: string }) {
 const socialLinks = [
     {
         name: "Call Me",
-        value: "+963 999 660 5715",
-        label: "+963 999 660 5715",
+        value: "+963 99 660 5715",
+        label: "+963 99 660 5715",
         icon: Phone,
         color: "hover:bg-green-500/10 hover:text-green-500 hover:border-green-500/20",
-        action: () => window.open("tel:+9639996605715")
+        action: () => window.open("tel:+963996605715")
     },
     {
         name: "WhatsApp",
