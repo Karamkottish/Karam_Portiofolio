@@ -136,9 +136,9 @@ export function Footer() {
                 {/* Bottom Bar */}
                 <div className="pt-8 border-t border-border/10 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
                     <p>© 2027 Karam Portfolio. All rights reserved.</p>
-                    <p className="flex items-center gap-1">
+                    {/* <p className="flex items-center gap-1">
                         Made with <Heart className="w-3 h-3 text-red-500 fill-red-500 animate-pulse" /> in Next.js
-                    </p>
+                    </p> */}
                 </div>
             </div>
         </footer>
