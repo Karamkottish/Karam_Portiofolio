@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Big_Shoulders, Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { PerspectiveProvider } from "@/components/PerspectiveProvider";
@@ -18,8 +18,18 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+// Display face for headings; the optical-size axis gives the tight signage cut at large sizes
+const bigShoulders = Big_Shoulders({
+  variable: "--font-big-shoulders",
+  subsets: ["latin"],
+  axes: ["opsz"],
+});
+
 // metadata.icons URLs are not prefixed with basePath, so add it for GitHub Pages
 const logoUrl = `${process.env.NEXT_PUBLIC_BASE_PATH || ""}/images/karam-logo.png`
+
+// Restores the saved perspective before first paint so CSS-driven UI never flashes the wrong mode
+const perspectiveScript = `try{document.documentElement.dataset.perspective=localStorage.getItem("perspective_mode")==="pm"?"pm":"dev"}catch(e){}`
 
 export const metadata: Metadata = {
   title: "Karam Kottish — Full-Stack Software Engineer & Product Manager",
@@ -58,9 +68,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" data-perspective="dev" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: perspectiveScript }} />
+      </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
+        className={`${geistSans.variable} ${geistMono.variable} ${bigShoulders.variable} antialiased bg-background text-foreground`}
       >
         <ThemeProvider
           attribute="class"

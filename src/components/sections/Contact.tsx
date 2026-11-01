@@ -1,20 +1,21 @@
 "use client"
 
 import { useState, useRef } from "react"
-import { motion } from "framer-motion"
-import dynamic from "next/dynamic"
 import emailjs from "@emailjs/browser"
-import { Send, Loader2, Mail, User, MessageSquare } from "lucide-react"
-import { InViewport } from "@/components/canvas/InViewport"
-import { cn } from "@/lib/utils"
+import { Send, Loader2, Copy, Check, ClipboardList } from "lucide-react"
+import { SectionHeader } from "@/components/ui/SectionHeader"
+import { StatusMark } from "@/components/ui/StatusMark"
+import { EMAIL, profiles } from "@/data/contact"
 
-const ContactCanvas = dynamic(() => import("@/components/canvas/ContactCanvas"), { ssr: false })
+const fieldClass =
+    "board-cell w-full px-3 py-3 font-sans text-[15px] text-(--flap-ink) placeholder:text-(--flap-dim) outline-none ring-0 transition-shadow focus:shadow-[0_0_0_2px_var(--signal)]"
 
 export function Contact() {
     const formRef = useRef<HTMLFormElement>(null)
     const [loading, setLoading] = useState(false)
     const [success, setSuccess] = useState(false)
     const [error, setError] = useState(false)
+    const [copied, setCopied] = useState(false)
 
     const [form, setForm] = useState({
         name: "",
@@ -27,6 +28,13 @@ export function Contact() {
         setForm({ ...form, [name]: value })
     }
 
+    const copyEmail = () => {
+        navigator.clipboard.writeText(EMAIL).then(() => {
+            setCopied(true)
+            setTimeout(() => setCopied(false), 2000)
+        })
+    }
+
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         setLoading(true)
@@ -37,8 +45,6 @@ export function Contact() {
         const TEMPLATE_ID = "template_g7uvlqs" // e.g., template_portfolio
         const PUBLIC_KEY = "gXXUWOBgsONuJeMtt"   // e.g., user_12345abcde
 
-
-
         emailjs
             .send(
                 SERVICE_ID,
@@ -47,7 +53,7 @@ export function Contact() {
                     from_name: form.name,
                     to_name: "Karam",
                     from_email: form.email,
-                    to_email: "karamkottish@gmail.com", // Your email (from screenshot)
+                    to_email: EMAIL, // Your email (from screenshot)
                     reply_to: form.email,
                     message: form.message,
                 },
@@ -77,140 +83,150 @@ export function Contact() {
     }
 
     return (
-        <section id="contact" className="relative min-h-screen flex items-center justify-center overflow-hidden py-20">
-            <InViewport rootMargin="400px" className="absolute inset-0 w-full h-full">
-                <ContactCanvas />
-            </InViewport>
+        <section id="contact" className="relative py-24 md:py-32 bg-background">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <SectionHeader
+                    index="07"
+                    label="Check-in"
+                    title="Let's build the next one"
+                    subtitle="Have a product to ship, or a team that needs an engineer who thinks like a PM? Tell me what you're working on."
+                />
 
-            <div className="relative z-10 container mx-auto px-4 flex flex-col md:flex-row items-center justify-center gap-10 md:gap-20">
-
-                {/* Left Side: Text & Info */}
-                <motion.div
-                    initial={{ opacity: 0, x: -50 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.8 }}
-                    viewport={{ once: true }}
-                    className="flex-1 text-center md:text-left pointer-events-none" // Pointer events none so it doesn't block canvas interaction
-                >
-                    <div className="pointer-events-auto"> {/* Re-enable pointer events for text selection */}
-                        <h2 className="text-4xl md:text-6xl font-black tracking-tighter mb-6">
-                            Let's <br />
-                            <span className="text-transparent bg-clip-text bg-linear-to-r from-blue-500 to-cyan-400">
-                                Connect
-                            </span>
-                        </h2>
-                        <p className="text-muted-foreground text-lg mb-8 max-w-md mx-auto md:mx-0">
-                            Have a project in mind? Looking for a uniquely trendy 2027 web experience? Send me a message and let's build the future together.
+                <div className="grid gap-6 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:items-start">
+                    {/* Desk details */}
+                    <div className="board reveal rounded-2xl p-3 sm:p-4 font-mono">
+                        <p className="pb-3 pl-1 text-[11px] uppercase tracking-[0.22em] text-(--flap-ink)">Desk</p>
+                        <dl className="space-y-1.5">
+                            <div className="grid grid-cols-[6.5rem_minmax(0,1fr)] gap-1">
+                                <dt className="board-cell flex items-center px-3 py-2.5 text-[10px] uppercase tracking-[0.18em] text-(--flap-dim)">Base</dt>
+                                <dd className="board-cell px-3 py-2.5 text-xs uppercase tracking-[0.06em]">RUH · Riyadh, Saudi Arabia</dd>
+                            </div>
+                            <div className="grid grid-cols-[6.5rem_minmax(0,1fr)] gap-1">
+                                <dt className="board-cell flex items-center px-3 py-2.5 text-[10px] uppercase tracking-[0.18em] text-(--flap-dim)">Status</dt>
+                                <dd className="board-cell px-3 py-2.5 text-xs uppercase tracking-[0.06em]">
+                                    <StatusMark status="live" className="inline-flex" />
+                                    <span className="ml-2 text-(--flap-ink)">Full-time &amp; freelance</span>
+                                </dd>
+                            </div>
+                            <div className="grid grid-cols-[6.5rem_minmax(0,1fr)] gap-1">
+                                <dt className="board-cell flex items-center px-3 py-2.5 text-[10px] uppercase tracking-[0.18em] text-(--flap-dim)">Email</dt>
+                                <dd className="board-cell flex items-center justify-between gap-2 px-3 py-1.5">
+                                    <a href={`mailto:${EMAIL}`} className="truncate text-xs hover:text-(--signal) focus-visible:outline-2 focus-visible:outline-ring">{EMAIL}</a>
+                                    <button
+                                        type="button"
+                                        onClick={copyEmail}
+                                        aria-label={copied ? "Email copied" : "Copy email address"}
+                                        className="shrink-0 rounded p-1.5 text-(--flap-dim) transition-colors hover:text-(--signal) focus-visible:outline-2 focus-visible:outline-ring"
+                                    >
+                                        {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
+                                    </button>
+                                </dd>
+                            </div>
+                            <div className="grid grid-cols-[6.5rem_minmax(0,1fr)] gap-1">
+                                <dt className="board-cell flex items-center px-3 py-2.5 text-[10px] uppercase tracking-[0.18em] text-(--flap-dim)">Profiles</dt>
+                                <dd className="board-cell flex flex-wrap gap-1 px-1.5 py-1.5">
+                                    {profiles.map((profile) => (
+                                        <a
+                                            key={profile.name}
+                                            href={profile.href}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            title={profile.label}
+                                            className="inline-flex items-center gap-1.5 rounded px-2 py-1.5 text-[11px] uppercase tracking-[0.08em] transition-colors hover:bg-(--flap-hover) hover:text-(--signal) focus-visible:outline-2 focus-visible:outline-ring"
+                                        >
+                                            <profile.icon className="size-3.5" aria-hidden="true" />
+                                            {profile.name}
+                                            <span className="sr-only">({profile.label}, opens in a new tab)</span>
+                                        </a>
+                                    ))}
+                                </dd>
+                            </div>
+                        </dl>
+                        <p className="pt-3 pl-1 text-[11px] uppercase leading-relaxed tracking-[0.1em]" aria-live="polite">
+                            {copied ? "Copied to clipboard" : "Phone and WhatsApp are in the footer"}
                         </p>
-
-                        <div className="flex flex-col gap-4 items-center md:items-start text-sm text-muted-foreground/80">
-                            <p>Based in Riyadh, Saudi Arabia </p>
-                            <p>Available for Freelance & Full-time</p>
-                        </div>
                     </div>
-                </motion.div>
 
-                {/* Right Side: Holographic Form */}
-                <motion.div
-                    initial={{ opacity: 0, x: 50 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.8, delay: 0.2 }}
-                    viewport={{ once: true }}
-                    className="flex-[1.2] w-full max-w-lg"
-                >
+                    {/* Check-in form */}
                     <form
                         ref={formRef}
                         onSubmit={handleSubmit}
-                        className="relative p-8 rounded-3xl bg-white/5 dark:bg-black/40 backdrop-blur-xl border border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.1)] dark:shadow-[0_0_40px_rgba(59,130,246,0.1)] group"
+                        className="board reveal rounded-2xl p-3 sm:p-5 font-mono"
                     >
-                        {/* Glowing Border Animation */}
-                        <div className="absolute inset-0 rounded-3xl border border-transparent group-hover:border-blue-500/30 transition-colors duration-500 pointer-events-none" />
+                        <p className="flex items-center gap-2 pb-4 pl-1 text-[11px] uppercase tracking-[0.22em] text-(--flap-ink)">
+                            <ClipboardList className="w-3.5 h-3.5" aria-hidden="true" />
+                            Check-in
+                        </p>
 
-                        <h3 className="text-2xl font-bold mb-6 text-foreground">Send Message</h3>
-
-                        <div className="space-y-6">
-                            {/* Name Input */}
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium text-muted-foreground ml-1">Your Name</label>
-                                <div className="relative group/input">
-                                    <User className="absolute left-4 top-3.5 w-5 h-5 text-muted-foreground group-focus-within/input:text-blue-500 transition-colors" />
-                                    <input
-                                        type="text"
-                                        name="name"
-                                        value={form.name}
-                                        onChange={handleChange}
-                                        required
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-foreground focus:outline-hidden focus:border-blue-500/50 focus:bg-white/10 transition-all"
-                                        placeholder="John Doe"
-                                    />
-                                </div>
+                        <div className="grid gap-4 sm:grid-cols-2">
+                            <div className="space-y-1.5">
+                                <label htmlFor="contact-name" className="pl-1 text-[10px] uppercase tracking-[0.18em]">Name</label>
+                                <input
+                                    id="contact-name"
+                                    type="text"
+                                    name="name"
+                                    autoComplete="name"
+                                    value={form.name}
+                                    onChange={handleChange}
+                                    required
+                                    className={fieldClass}
+                                    placeholder="Your name"
+                                />
                             </div>
-
-                            {/* Email Input */}
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium text-muted-foreground ml-1">Your Email</label>
-                                <div className="relative group/input">
-                                    <Mail className="absolute left-4 top-3.5 w-5 h-5 text-muted-foreground group-focus-within/input:text-blue-500 transition-colors" />
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        value={form.email}
-                                        onChange={handleChange}
-                                        required
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-foreground focus:outline-hidden focus:border-blue-500/50 focus:bg-white/10 transition-all"
-                                        placeholder="john@example.com"
-                                    />
-                                </div>
+                            <div className="space-y-1.5">
+                                <label htmlFor="contact-email" className="pl-1 text-[10px] uppercase tracking-[0.18em]">Email</label>
+                                <input
+                                    id="contact-email"
+                                    type="email"
+                                    name="email"
+                                    autoComplete="email"
+                                    value={form.email}
+                                    onChange={handleChange}
+                                    required
+                                    className={fieldClass}
+                                    placeholder="you@company.com"
+                                />
                             </div>
-
-                            {/* Message Input */}
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium text-muted-foreground ml-1">Your Message</label>
-                                <div className="relative group/input">
-                                    <MessageSquare className="absolute left-4 top-3.5 w-5 h-5 text-muted-foreground group-focus-within/input:text-blue-500 transition-colors" />
-                                    <textarea
-                                        rows={4}
-                                        name="message"
-                                        value={form.message}
-                                        onChange={handleChange}
-                                        required
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-foreground focus:outline-hidden focus:border-blue-500/50 focus:bg-white/10 transition-all resize-none"
-                                        placeholder="Hi, I'd like to talk about..."
-                                    />
-                                </div>
+                            <div className="space-y-1.5 sm:col-span-2">
+                                <label htmlFor="contact-message" className="pl-1 text-[10px] uppercase tracking-[0.18em]">Message</label>
+                                <textarea
+                                    id="contact-message"
+                                    rows={5}
+                                    name="message"
+                                    value={form.message}
+                                    onChange={handleChange}
+                                    required
+                                    className={`${fieldClass} resize-none`}
+                                    placeholder="What are you building, and where can I help?"
+                                />
                             </div>
+                        </div>
 
+                        <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
+                            <p className="pl-1 text-[11px] uppercase tracking-[0.1em]" aria-live="polite">
+                                {success && <span className="text-emerald-700 dark:text-emerald-400">Received. I&apos;ll get back to you soon.</span>}
+                                {error && <span className="text-destructive">Something went wrong. Please try again.</span>}
+                            </p>
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full py-4 rounded-xl bg-linear-to-r from-blue-600 to-cyan-500 text-white font-bold text-lg shadow-lg hover:shadow-cyan-500/25 transform hover:-translate-y-1 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                className="inline-flex h-12 items-center gap-2 rounded-full bg-(--signal) px-6 text-xs font-semibold uppercase tracking-[0.12em] text-background transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
                             >
                                 {loading ? (
                                     <>
-                                        <Loader2 className="w-5 h-5 animate-spin" /> Sending...
+                                        <Loader2 className="size-4 animate-spin" aria-hidden="true" /> Sending
                                     </>
                                 ) : success ? (
-                                    "Message Sent!"
+                                    "Message sent"
                                 ) : (
                                     <>
-                                        Send Message <Send className="w-5 h-5" />
+                                        Send message <Send className="size-4" aria-hidden="true" />
                                     </>
                                 )}
                             </button>
-
-                            {success && (
-                                <p className="text-green-500 text-sm text-center mt-2 animate-pulse">
-                                    Thank you! I'll get back to you soon.
-                                </p>
-                            )}
-                            {error && (
-                                <p className="text-red-500 text-sm text-center mt-2">
-                                    Something went wrong. Please try again.
-                                </p>
-                            )}
                         </div>
                     </form>
-                </motion.div>
+                </div>
             </div>
         </section>
     )

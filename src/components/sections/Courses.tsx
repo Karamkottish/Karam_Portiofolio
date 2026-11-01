@@ -1,10 +1,12 @@
 "use client"
 
-import { useState } from "react"
-import dynamic from "next/dynamic"
+import { useEffect, useState } from "react"
 import { motion as m, AnimatePresence } from "framer-motion"
-import { Award, X, Download, ShieldCheck, ExternalLink } from "lucide-react"
-import { InViewport } from "@/components/canvas/InViewport"
+import { Award, X, ExternalLink, PlaneLanding, ChevronDown } from "lucide-react"
+import { cn } from "@/lib/utils"
+import { SectionHeader } from "@/components/ui/SectionHeader"
+import { StatusMark } from "@/components/ui/StatusMark"
+import { parseMonth, shortMonth, toIndex } from "@/lib/route"
 
 export type Course = {
     title: string
@@ -13,8 +15,6 @@ export type Course = {
     image?: string
     skills?: string[]
 }
-
-const CoursesScene = dynamic(() => import("@/components/canvas/CoursesScene"), { ssr: false })
 
 const courses: Course[] = [
     // To show the certificate image: save the screenshot as
@@ -46,9 +46,32 @@ const courses: Course[] = [
     { title: "Delegation & Mentoring", issuer: "Edraak", date: "Sep 2025", image: "/images/courses/DelegaationCounchingMentoringSkillsEng.pdf" }
 ]
 
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH || ""
+const INITIAL_ROWS = 8
 
+/** When a course "landed": the end of its date range. */
+function arrival(course: Course) {
+    const parts = course.date.split(" - ")
+    return parseMonth(parts[parts.length - 1])
+}
 
-function CertificationModal({ course, onClose }: { course: Course, onClose: () => void }) {
+// Newest arrivals first, like a live board
+const arrivals = courses
+    .map((course) => ({ course, landed: arrival(course) }))
+    .sort((a, b) => (b.landed ? toIndex(b.landed) : 0) - (a.landed ? toIndex(a.landed) : 0))
+
+function fileUrl(image: string) {
+    return image.startsWith("http") ? image : `${basePath}${image}`
+}
+
+function CertificationModal({ course, onClose }: { course: Course | null; onClose: () => void }) {
+    useEffect(() => {
+        if (!course) return
+        const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose()
+        window.addEventListener("keydown", onKey)
+        return () => window.removeEventListener("keydown", onKey)
+    }, [course, onClose])
+
     return (
         <AnimatePresence>
             {course && (
@@ -57,105 +80,158 @@ function CertificationModal({ course, onClose }: { course: Course, onClose: () =
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     onClick={onClose}
-                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4"
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
                 >
                     <m.div
-                        initial={{ scale: 0.9, rotateX: 10, y: 50, opacity: 0 }}
-                        animate={{ scale: 1, rotateX: 0, y: 0, opacity: 1 }}
-                        exit={{ scale: 0.9, rotateX: -10, y: 50, opacity: 0 }}
-                        transition={{ type: "spring", damping: 20, stiffness: 300 }}
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="certificate-title"
+                        initial={{ y: 24, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: 24, opacity: 0 }}
+                        transition={{ type: "spring", damping: 26, stiffness: 300 }}
                         onClick={(e) => e.stopPropagation()}
-                        className="relative w-full max-w-2xl bg-white/10 dark:bg-zinc-900/90 border border-white/20 dark:border-white/10 rounded-3xl p-8 shadow-2xl overflow-hidden"
-                        style={{ transformStyle: "preserve-3d" }}
+                        className="board relative w-full max-w-3xl rounded-2xl p-3 sm:p-4 font-mono"
                     >
-                        {/* Background Glow */}
-                        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl pointer-events-none" />
-                        <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-64 h-64 bg-blue-500/20 rounded-full blur-3xl pointer-events-none" />
-
-                        {/* Top Bar */}
-                        <div className="flex justify-between items-start mb-8 relative z-10">
-                            <div>
-                                <m.h2
-                                    initial={{ opacity: 0, x: -20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: 0.1 }}
-                                    className="text-3xl font-bold bg-clip-text text-transparent bg-linear-to-r from-blue-400 to-purple-400"
-                                >
+                        <div className="flex items-start justify-between gap-4 pb-3 pl-1">
+                            <div className="min-w-0">
+                                <p className="text-[11px] uppercase tracking-[0.18em] text-(--flap-dim)">Certificate · {course.issuer}</p>
+                                <h3 id="certificate-title" className="mt-1 font-display text-3xl font-extrabold uppercase leading-[0.95] tracking-tight text-(--flap-ink)">
                                     {course.title}
-                                </m.h2>
-                                <p className="text-muted-foreground flex items-center gap-2 mt-2">
-                                    <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                                    Verified Certification by {course.issuer}
-                                </p>
+                                </h3>
                             </div>
                             <button
+                                type="button"
                                 onClick={onClose}
-                                className="p-2 rounded-full bg-white/5 hover:bg-white/10 transition-colors group"
+                                autoFocus
+                                aria-label="Close"
+                                className="board-cell shrink-0 p-2 transition-colors hover:text-(--signal) focus-visible:outline-2 focus-visible:outline-ring"
                             >
-                                <X className="w-6 h-6 text-muted-foreground group-hover:text-white transition-colors" />
+                                <X className="size-5" />
                             </button>
                         </div>
 
-                        {/* Certificate Preview */}
-                        <div className="relative aspect-video w-full rounded-2xl overflow-hidden bg-linear-to-br from-gray-800 to-gray-900 border border-white/5 shadow-inner mb-8 group flex items-center justify-center">
-                            {course.image ? (() => {
-                                const basePath = process.env.NEXT_PUBLIC_BASE_PATH || ''
-                                const src = course.image!.startsWith('http') ? course.image! : `${basePath}${course.image}`
-                                return course.image!.endsWith('.pdf') ? (
-                                    <iframe src={src + "#view=FitH"} loading="lazy" className="w-full h-full border-none" />
+                        <div className="board-cell relative flex aspect-video w-full items-center justify-center overflow-hidden">
+                            {course.image ? (
+                                course.image.endsWith(".pdf") ? (
+                                    <iframe src={fileUrl(course.image) + "#view=FitH"} title={course.title} loading="lazy" className="h-full w-full border-none" />
                                 ) : (
                                     // eslint-disable-next-line @next/next/no-img-element
-                                    <img src={src} alt={course.title} loading="lazy" decoding="async" className="w-full h-full object-contain" />
+                                    <img src={fileUrl(course.image)} alt={course.title} loading="lazy" decoding="async" className="h-full w-full object-contain" />
                                 )
-                            })() : (
-                                <div className="absolute inset-0 flex items-center justify-center flex-col gap-4">
-                                    <Award className="w-16 h-16 text-white/20 group-hover:scale-110 transition-transform duration-500" />
-                                    <p className="text-white/40 font-mono text-sm uppercase tracking-widest">Certificate Preview</p>
-                                </div>
-                            )}
-                            {/* Animated Scan Line (only if no image or strictly decorative) */}
-                            {!course.image && (
-                                <div className="absolute inset-0 w-full h-[2px] bg-linear-to-r from-transparent via-blue-500/50 to-transparent opacity-50 animate-scan" />
+                            ) : (
+                                <Award className="size-14 text-(--flap-dim)" aria-hidden="true" />
                             )}
                         </div>
 
-                        {/* Actions */}
-                        <div className="flex gap-4">
-                            <button className="flex-1 py-4 rounded-xl bg-linear-to-r from-blue-600 to-purple-600 font-bold text-white shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 hover:scale-[1.02] transition-all flex items-center justify-center gap-2">
-                                <Download className="w-5 h-5" /> Download PDF
-                            </button>
-                            <button className="flex-1 py-4 rounded-xl bg-white/5 border border-white/10 font-bold hover:bg-white/10 transition-all flex items-center justify-center gap-2">
-                                <ExternalLink className="w-5 h-5" /> Verify Credential
-                            </button>
-                        </div>
+                        {course.image && (
+                            <div className="flex justify-end pt-3">
+                                <a
+                                    href={fileUrl(course.image)}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex h-10 items-center gap-2 rounded-full bg-(--signal) px-5 text-xs font-semibold uppercase tracking-[0.1em] text-background transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                                >
+                                    Open file <ExternalLink className="size-4" aria-hidden="true" />
+                                </a>
+                            </div>
+                        )}
                     </m.div>
                 </m.div>
             )}
         </AnimatePresence>
     )
 }
+
 export function Courses() {
     const [selectedCourse, setSelectedCourse] = useState<Course | null>(null)
+    const [showAll, setShowAll] = useState(false)
+    const rows = showAll ? arrivals : arrivals.slice(0, INITIAL_ROWS)
+    const certified = courses.filter((course) => course.image).length
 
     return (
-        <section id="courses" className="h-screen w-full relative overflow-hidden bg-background">
-            <div className="absolute top-10 w-full text-center z-10 pointer-events-none">
-                <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-2">
-                    Certified <span className="text-transparent bg-clip-text bg-linear-to-r from-blue-500 to-violet-500">Expertise</span>
-                </h2>
-                <p className="text-muted-foreground text-sm md:text-base">Drag to explore certifications</p>
+        <section id="courses" className="relative py-24 md:py-32 bg-background">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <SectionHeader
+                    index="05"
+                    label="Arrivals"
+                    title="What I've learned"
+                    subtitle="The other side of the board: courses and certificates that landed, newest first."
+                    meta={`${courses.length} courses · ${certified} certificates on file`}
+                />
+
+                <div className="board reveal rounded-2xl p-3 sm:p-4 font-mono">
+                    <div className="flex items-center justify-between gap-3 pb-3 pl-1">
+                        <p className="flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-(--flap-ink)">
+                            <PlaneLanding className="w-3.5 h-3.5" aria-hidden="true" />
+                            Arrivals
+                        </p>
+                        <p className="text-[11px] uppercase tracking-[0.14em]">{rows.length} of {courses.length}</p>
+                    </div>
+
+                    <div className="hidden md:grid grid-cols-[5.5rem_minmax(0,1fr)_minmax(0,15rem)_8rem] gap-1 pb-1.5 text-[10px] uppercase tracking-[0.18em]" aria-hidden="true">
+                        <span className="px-3">Landed</span>
+                        <span className="px-3">Course</span>
+                        <span className="px-3">From</span>
+                        <span className="px-3">Status</span>
+                    </div>
+
+                    <ol className="space-y-2.5 md:space-y-1.5">
+                        {rows.map(({ course, landed }) => (
+                            <li
+                                key={course.title}
+                                className="grid grid-cols-[5.5rem_minmax(0,1fr)] md:grid-cols-[5.5rem_minmax(0,1fr)_minmax(0,15rem)_8rem] gap-1"
+                            >
+                                <span className="board-cell flex items-center px-3 py-2 text-xs uppercase tabular-nums text-(--flap-dim)">
+                                    {landed ? shortMonth(landed) : "—"}
+                                </span>
+                                <div className="board-cell px-3 py-2">
+                                    <p className="font-sans text-sm font-semibold leading-snug">{course.title}</p>
+                                    {/* On phones the issuer rides along under the title instead of taking its own row */}
+                                    <p className="mt-1 text-[11px] uppercase tracking-[0.06em] md:hidden">{course.issuer}</p>
+                                    {course.skills && course.skills.length > 0 && (
+                                        <p className="mt-1 text-[10px] uppercase tracking-[0.1em] text-(--flap-dim)">{course.skills.join(" · ")}</p>
+                                    )}
+                                </div>
+                                <span className="board-cell hidden md:flex items-center px-3 py-2 text-[11px] uppercase tracking-[0.06em]">
+                                    {course.issuer}
+                                </span>
+                                {course.image ? (
+                                    <button
+                                        type="button"
+                                        onClick={() => setSelectedCourse(course)}
+                                        className="board-cell col-span-2 md:col-span-1 flex items-center justify-between gap-2 px-3 py-2 text-[11px] uppercase tracking-[0.08em] text-(--signal) transition-colors hover:bg-(--flap-hover) focus-visible:outline-2 focus-visible:outline-ring"
+                                    >
+                                        View cert
+                                        <Award className="size-3.5" aria-hidden="true" />
+                                        <span className="sr-only">for {course.title}</span>
+                                    </button>
+                                ) : (
+                                    <span className="board-cell hidden md:flex items-center px-3 py-2 text-[11px] uppercase tracking-[0.08em]">
+                                        <StatusMark status="landed" />
+                                    </span>
+                                )}
+                            </li>
+                        ))}
+                    </ol>
+
+                    {arrivals.length > INITIAL_ROWS && (
+                        <div className="flex justify-center pt-3">
+                            <button
+                                type="button"
+                                onClick={() => setShowAll((value) => !value)}
+                                aria-expanded={showAll}
+                                className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-[11px] uppercase tracking-[0.14em] text-(--flap-ink) transition-colors hover:text-(--signal) focus-visible:outline-2 focus-visible:outline-ring"
+                            >
+                                {showAll ? "Show fewer" : `Show all ${arrivals.length} arrivals`}
+                                <ChevronDown className={cn("size-3.5 transition-transform", showAll && "rotate-180")} aria-hidden="true" />
+                            </button>
+                        </div>
+                    )}
+                </div>
             </div>
 
-            <InViewport rootMargin="400px" className="absolute inset-0 z-0">
-                <CoursesScene courses={courses} onSelect={setSelectedCourse} />
-            </InViewport>
-
-            {/* Gradient overlays for depth */}
-            <div className="absolute inset-y-0 left-0 w-32 bg-linear-to-r from-background to-transparent pointer-events-none" />
-            <div className="absolute inset-y-0 right-0 w-32 bg-linear-to-l from-background to-transparent pointer-events-none" />
-
-            {/* Modal Layer */}
-            <CertificationModal course={selectedCourse!} onClose={() => setSelectedCourse(null)} />
+            <CertificationModal course={selectedCourse} onClose={() => setSelectedCourse(null)} />
         </section>
     )
 }

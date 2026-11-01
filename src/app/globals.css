@@ -1,53 +1,124 @@
 @import "tailwindcss";
 
+/* Follow next-themes' .dark class instead of the OS setting */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Perspective is mirrored onto <html data-perspective> before first paint */
+@custom-variant pm (&:where([data-perspective="pm"] *));
+@custom-variant dev (&:where(:root:not([data-perspective="pm"]) *));
+
 @theme {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  /* Condensed signage face for headings, in the spirit of the departures board */
+  --font-display: var(--font-big-shoulders);
 }
 
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+}
+
+/* Day shift: warm paper and ink */
 :root {
-  --background: 0 0% 100%;
-  --foreground: 240 10% 3.9%;
-  --card: 0 0% 100%;
-  --card-foreground: 240 10% 3.9%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 240 10% 3.9%;
-  --primary: 240 5.9% 10%;
-  --primary-foreground: 0 0% 98%;
-  --secondary: 240 4.8% 95.9%;
-  --secondary-foreground: 240 5.9% 10%;
-  --muted: 240 4.8% 95.9%;
-  --muted-foreground: 240 3.8% 46.1%;
-  --accent: 240 4.8% 95.9%;
-  --accent-foreground: 240 5.9% 10%;
-  --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 0 0% 98%;
-  --border: 240 5.9% 90%;
-  --input: 240 5.9% 90%;
-  --ring: 240 5.9% 10%;
+  --background: 44 35% 94%;
+  --foreground: 38 21% 7%;
+  --card: 43 47% 97%;
+  --card-foreground: 38 21% 7%;
+  --popover: 43 47% 97%;
+  --popover-foreground: 38 21% 7%;
+  --primary: 38 21% 7%;
+  --primary-foreground: 44 35% 94%;
+  --secondary: 42 30% 89%;
+  --secondary-foreground: 38 21% 7%;
+  --muted: 42 30% 89%;
+  --muted-foreground: 38 11% 38%;
+  --accent: 42 30% 89%;
+  --accent-foreground: 38 21% 7%;
+  --destructive: 8 72% 45%;
+  --destructive-foreground: 44 35% 94%;
+  --border: 41 24% 82%;
+  --input: 41 24% 82%;
+  --ring: 39 100% 27%;
   --radius: 0.5rem;
+
+  /* Signal accents: saffron for the engineer, coral for the product manager */
+  --accent-dev: #8a5a00;
+  --accent-pm: #b4380f;
+  --signal: var(--accent-dev);
+
+  /* Board material, shared by the departures board, the toolchain, arrivals and passes */
+  --board: #e6e0d2;
+  --board-ink: #4f483c;
+  --flap: #fbf9f4;
+  --flap-hover: #ffffff;
+  --flap-ink: #17140f;
+  --flap-dim: #6b6355;
+  --hinge: rgb(0 0 0 / 0.07);
+  --shade: 0.2;
+  --note: #f1ece1;
+  --note-edge: #a69e8f;
+  --flap-h: 2rem;
+  --flap-dur: 480ms;
+  --flap-ease: cubic-bezier(0.55, 0, 0.45, 1.12);
 }
 
+/* Night shift: warm ink, not the default zinc */
 .dark {
-  --background: 240 10% 3.9%;
-  --foreground: 0 0% 98%;
-  --card: 240 10% 3.9%;
-  --card-foreground: 0 0% 98%;
-  --popover: 240 10% 3.9%;
-  --popover-foreground: 0 0% 98%;
-  --primary: 0 0% 98%;
-  --primary-foreground: 240 5.9% 10%;
-  --secondary: 240 3.7% 15.9%;
-  --secondary-foreground: 0 0% 98%;
-  --muted: 240 3.7% 15.9%;
-  --muted-foreground: 240 5% 64.9%;
-  --accent: 240 3.7% 15.9%;
-  --accent-foreground: 0 0% 98%;
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 0 0% 98%;
-  --border: 240 3.7% 15.9%;
-  --input: 240 3.7% 15.9%;
-  --ring: 240 4.9% 83.9%;
+  --background: 40 13% 4.5%;
+  --foreground: 39 33% 92%;
+  --card: 40 17% 7%;
+  --card-foreground: 39 33% 92%;
+  --popover: 40 17% 7%;
+  --popover-foreground: 39 33% 92%;
+  --primary: 39 33% 92%;
+  --primary-foreground: 40 13% 4.5%;
+  --secondary: 38 16% 10%;
+  --secondary-foreground: 39 33% 92%;
+  --muted: 38 16% 10%;
+  --muted-foreground: 39 11% 61%;
+  --accent: 38 16% 10%;
+  --accent-foreground: 39 33% 92%;
+  --destructive: 8 70% 52%;
+  --destructive-foreground: 39 33% 92%;
+  --border: 38 15% 14%;
+  --input: 38 15% 14%;
+  --ring: 45 90% 57%;
+
+  --accent-dev: #f4c430;
+  --accent-pm: #ff7a59;
+
+  --board: #0a0907;
+  --board-ink: #a69e8f;
+  --flap: #1a1814;
+  --flap-hover: #221f1a;
+  --flap-ink: #f3eee4;
+  --flap-dim: #a69e8f;
+  --hinge: rgb(0 0 0 / 0.6);
+  --shade: 0.55;
+  --note: #26221c;
+  --note-edge: #5a5346;
+}
+
+:root[data-perspective="pm"] {
+  --signal: var(--accent-pm);
 }
 
 body {
@@ -61,17 +132,9 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Glassmorphism utility classes */
-.glass {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.dark .glass {
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+::selection {
+  background: var(--signal);
+  color: hsl(var(--background));
 }
 
 /* Custom Scrollbar */
@@ -92,11 +155,6 @@ html {
   background: hsl(var(--muted-foreground));
 }
 
-@utility text-gradient {
-  @apply bg-clip-text text-transparent bg-linear-to-r from-blue-600 via-purple-500 to-pink-500 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400;
-
-}
-
 /* Developer Debug Mode Styles */
 body.debug-mode-active div,
 body.debug-mode-active section,
@@ -111,3 +169,371 @@ body.debug-mode-active #debug-console-wrapper,
 body.debug-mode-active #debug-console-wrapper div {
   outline: none !important;
 }
+
+/* One animated number drives each departures flap: 0 = engineering face, 1 = product face */
+@property --flip {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+/* Release-notes panel: 0 = folded up out of sight, 1 = hanging over the row */
+@property --drop {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+@keyframes flap-settle {
+  from {
+    --flip: 0.5;
+  }
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+}
+
+/* Board row -> project card morph (BoardingTransitions) */
+::view-transition-group(departure) {
+  animation-duration: 0.6s;
+  animation-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.35s;
+}
+
+/* Layered so Tailwind utilities (hidden, sm:grid, ...) still win over these */
+@layer components {
+
+/* ---------- Perspective swap (hero copy) ---------- */
+/* Both versions share one grid cell, so the block is always as tall as the longer one */
+.persp-swap {
+  display: grid;
+}
+
+.persp-swap > * {
+  grid-area: 1 / 1;
+  transition: opacity 0.35s ease, transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1), visibility 0s linear 0s;
+}
+
+:root:not([data-perspective="pm"]) .persp-swap > .persp-pm,
+[data-perspective="pm"] .persp-swap > .persp-dev {
+  opacity: 0;
+  transform: translateY(0.4em);
+  visibility: hidden;
+  transition-delay: 0s, 0s, 0.45s;
+}
+
+/* ---------- Board tray (departures, toolchain, arrivals, check-in) ---------- */
+.board {
+  background: var(--board);
+  color: var(--board-ink);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.7), 0 24px 48px -28px rgb(60 40 10 / 0.35);
+}
+
+.dark .board {
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.04), 0 0 0 1px rgb(255 240 210 / 0.06);
+}
+
+/* A static board cell: tile colours without the split line, and free height so text can wrap */
+.board-cell {
+  position: relative;
+  border-radius: 4px;
+  background: var(--flap);
+  color: var(--flap-ink);
+}
+
+/* ---------- Section reveal ---------- */
+/* Scroll-driven, no JavaScript; browsers without view timelines just show the content */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal {
+      animation: reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 35%;
+    }
+  }
+}
+
+/* ---------- Passes (experience, education) ---------- */
+.pass {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border-radius: 18px;
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  transition: border-color 0.2s ease, transform 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.pass:hover {
+  border-color: color-mix(in oklab, var(--signal) 45%, hsl(var(--border)));
+}
+
+/* Tear line with a notch cut out of each edge, like a boarding pass */
+.pass-perf {
+  position: relative;
+  margin: 0 22px;
+  border-top: 2px dashed hsl(var(--border));
+}
+
+.pass-perf::before,
+.pass-perf::after {
+  content: "";
+  position: absolute;
+  top: -12px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: hsl(var(--background));
+  border: 1px solid hsl(var(--border));
+}
+
+.pass-perf::before {
+  left: -34px;
+  clip-path: inset(0 0 0 50%);
+}
+
+.pass-perf::after {
+  right: -34px;
+  clip-path: inset(0 50% 0 0);
+}
+
+/* Phones: two lines per row (product | status, then the two flipping cells); the year is hidden */
+.dep-cells {
+  display: grid;
+  gap: 4px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-areas:
+    "product status"
+    "a b";
+}
+
+@media (min-width: 40rem) {
+  .dep-cells {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr) minmax(0, 1.15fr) 3.25rem 7rem;
+    grid-template-areas: "product a b year status";
+  }
+}
+
+.dep-product { grid-area: product; }
+.dep-a { grid-area: a; }
+.dep-b { grid-area: b; }
+.dep-year { grid-area: year; }
+.dep-status { grid-area: status; }
+
+.dep-row {
+  display: block;
+  border-radius: 6px;
+  outline: 2px solid transparent;
+  outline-offset: 3px;
+  transition: outline-color 0.15s ease;
+}
+
+.dep-row:hover {
+  --flap: var(--flap-hover);
+}
+
+.dep-row:focus-visible {
+  outline-color: hsl(var(--ring));
+}
+
+.flap {
+  --flip: 0;
+  position: relative;
+  display: block;
+  height: var(--flap-h);
+  border-radius: 4px;
+  background: var(--flap);
+  color: var(--flap-ink);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+  perspective: 22rem;
+  transition: background-color 0.15s ease;
+}
+
+.flap[data-flap] {
+  transition: --flip var(--flap-dur) var(--flap-ease) var(--d, 0ms), background-color 0.15s ease;
+  animation: flap-settle 420ms var(--flap-ease) calc(var(--d, 0ms) + 150ms) backwards;
+}
+
+[data-perspective="pm"] .flap[data-flap] {
+  --flip: 1;
+}
+
+/* The split line between the two halves */
+.flap::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: calc(50% - 0.5px);
+  height: 1px;
+  background: var(--hinge);
+  z-index: 3;
+}
+
+.flap-half,
+.flap-face {
+  position: absolute;
+  inset-inline: 0;
+  overflow: hidden;
+  background: var(--flap);
+  transition: background-color 0.15s ease;
+}
+
+.flap-half {
+  height: 50%;
+}
+
+.flap-upper {
+  top: 0;
+  border-radius: 4px 4px 0 0;
+}
+
+.flap-lower {
+  top: 50%;
+  border-radius: 0 0 4px 4px;
+}
+
+/* The leaf hinges on its bottom edge and falls from the top half to the bottom half */
+.flap-leaf {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 50%;
+  z-index: 2;
+  transform-origin: 50% 100%;
+  transform-style: preserve-3d;
+  transform: rotateX(calc(var(--flip) * -180deg));
+}
+
+.flap-face {
+  inset-block: 0;
+  backface-visibility: hidden;
+  border-radius: 4px 4px 0 0;
+}
+
+.flap-face-back {
+  transform: rotateX(180deg);
+  border-radius: 0 0 4px 4px;
+}
+
+.flap-text {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: var(--flap-h);
+  line-height: var(--flap-h);
+  padding-inline: 0.5rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.flap-lower .flap-text,
+.flap-face-back .flap-text {
+  top: calc(var(--flap-h) / -2);
+}
+
+/* Shading as the leaf turns away from the viewer, and the shadow it throws on the half below */
+.flap-face::before,
+.flap-lower::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.flap-face::before {
+  background: #000;
+}
+
+.flap-lower::before {
+  background: linear-gradient(to bottom, #000, transparent 75%);
+}
+
+@supports (opacity: sin(30deg)) {
+  .flap-face::before {
+    opacity: calc(var(--shade) * sin(var(--flip) * 180deg));
+  }
+
+  .flap-lower::before {
+    opacity: calc(var(--shade) * 0.8 * sin(var(--flip) * 180deg));
+  }
+}
+
+/* Hinged on its top edge over the two flipping cells; swings down like a falling flap */
+.dep-note {
+  --drop: 0;
+  position: relative;
+  z-index: 4;
+  grid-column: a / b;
+  grid-row: a;
+  display: block;
+  height: var(--flap-h);
+  border-radius: 4px;
+  background: var(--note);
+  color: var(--flap-ink);
+  box-shadow: inset 2px 0 0 var(--note-edge);
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+  pointer-events: none;
+  visibility: hidden;
+  transform-origin: 50% 0;
+  transform: perspective(22rem) rotateX(calc((1 - var(--drop)) * 90deg));
+  transition: --drop 220ms cubic-bezier(0.4, 0, 1, 1), visibility 0s linear 220ms;
+}
+
+.dep-row:hover .dep-note,
+.dep-row:focus-visible .dep-note {
+  --drop: 1;
+  visibility: visible;
+  /* A short hover intent so sweeping across the board doesn't drop every row */
+  transition: --drop 340ms var(--flap-ease) 120ms, visibility 0s linear 120ms;
+}
+
+.dep-note-label {
+  margin-right: 0.6em;
+  font-size: 0.625rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--flap-dim);
+}
+
+/* A card reached from the board skips its scroll-in fade, so the morph lands on something visible */
+[data-arrived] {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+[data-arrived]:focus {
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flap[data-flap],
+  .dep-note {
+    transition: none;
+    animation: none;
+  }
+
+  .dep-row:hover .dep-note,
+  .dep-row:focus-visible .dep-note {
+    transition: none;
+  }
+
+  .persp-swap > * {
+    transition: none;
+  }
+}
+
+} /* @layer components */

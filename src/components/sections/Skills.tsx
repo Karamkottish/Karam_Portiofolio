@@ -1,135 +1,130 @@
-"use client"
+import { Wrench } from "lucide-react"
+import { cn } from "@/lib/utils"
+import { Flap } from "@/components/ui/Flap"
+import { Swap } from "@/components/ui/Swap"
+import { PerspectiveSwitch } from "@/components/ui/PerspectiveSwitch"
+import { SectionHeader } from "@/components/ui/SectionHeader"
 
-import { motion } from "framer-motion"
-import dynamic from "next/dynamic"
-import { Users, Brain, MessageSquare, Terminal, Globe2 } from "lucide-react"
-import { InViewport } from "@/components/canvas/InViewport"
-import { usePerspective } from "@/components/PerspectiveProvider"
+type Line = { label: string; items: string[] }
 
-const SkillsCanvas = dynamic(() => import("@/components/canvas/SkillsCanvas"), { ssr: false })
-
-const softSkills = [
-    { name: "Product Management", icon: <Users /> },
-    { name: "Team Leadership", icon: <Brain /> },
-    { name: "Strategic Thinking", icon: <Terminal /> }, // Using Terminal as abstract placeholder for logic/strategy
-    { name: "Effective Communication", icon: <MessageSquare /> },
+// Each row is one line of the board; its engineering and product faces flip together
+const toolchain: { dev: Line; pm: Line }[] = [
+    {
+        dev: { label: "Mobile", items: ["Flutter", "React Native", "GetX", "Firebase", "Supabase"] },
+        pm: { label: "Discovery", items: ["User research", "Market research", "Customer journey", "Wireframing", "Figma"] },
+    },
+    {
+        dev: { label: "Web", items: ["React", "Next.js", "TypeScript", "Tailwind", "Three.js"] },
+        pm: { label: "Delivery", items: ["Agile", "Scrum", "Sprint planning", "Jira", "Risk management"] },
+    },
+    {
+        dev: { label: "Backend", items: ["Node.js", "FastAPI", "PHP", "Python", "GraphQL"] },
+        pm: { label: "Strategy", items: ["Roadmapping", "Vision", "Prioritization", "Go-to-market", "Stakeholders"] },
+    },
+    {
+        dev: { label: "Data & ops", items: ["PostgreSQL", "MySQL", "AWS", "Docker", "Git"] },
+        pm: { label: "Metrics", items: ["Product KPIs", "A/B testing", "Data analysis", "Growth metrics", "Value prop"] },
+    },
 ]
 
 const languages = [
     { name: "Arabic", level: "Native", percentage: 100 },
     { name: "English", level: "Professional", percentage: 90 },
-    //{ name: "German", level: "Beginner", percentage: 30 }, // Example
 ]
 
-export function Skills() {
-    const { mode } = usePerspective()
+const workingStyle = ["Product management", "Team leadership", "Strategic thinking", "Clear communication"]
 
+// Tiles flip as a diagonal wave across the board
+const WAVE_MS = 40
+
+function SpokenToolchain({ face }: { face: "dev" | "pm" }) {
     return (
-        <section id="skills" className="relative py-24 bg-background overflow-hidden">
+        <ul className={cn("sr-only", face === "dev" ? "pm:hidden" : "dev:hidden")}>
+            {toolchain.map((line) => (
+                <li key={line[face].label}>
+                    {line[face].label}: {line[face].items.join(", ")}
+                </li>
+            ))}
+        </ul>
+    )
+}
 
-            {/* Background Gradients */}
-            <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-[600px] h-[600px] bg-blue-500/10 rounded-full blur-[120px]" />
-            <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-purple-500/10 rounded-full blur-[120px]" />
+export function Skills() {
+    return (
+        <section id="skills" className="relative py-24 md:py-32 bg-background">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <SectionHeader
+                    index="03"
+                    label="Toolchain"
+                    title={{ dev: "What I build with", pm: "How I run product" }}
+                    subtitle="Flip the board to switch between the engineering stack and the product toolkit."
+                />
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    className="text-center mb-16"
-                >
-                    <h2 className="text-4xl md:text-5xl font-black mb-6 tracking-tight">
-                        {mode === "pm" ? "Product" : "Technical"}{" "}
-                        <span className="text-transparent bg-clip-text bg-linear-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
-                            {mode === "pm" ? "Ecosystem" : "Proficiency"}
-                        </span>
-                    </h2>
-                    <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
-                        {mode === "pm"
-                            ? "A comprehensive toolkit for driving product strategy, execution, and team alignment."
-                            : "A dynamic toolbelt of modern technologies and frameworks honed through production experience."}
-                    </p>
-                </motion.div>
-
-                {/* 3D Skills Constellation */}
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }}
-                    className="w-full mb-20 rounded-3xl overflow-hidden border border-gray-200 dark:border-white/10 bg-black/5 dark:bg-white/5 relative shadow-xl"
-                >
-                    <div className="absolute top-4 left-6 z-10 hidden md:block">
-                        <p className="text-sm font-semibold tracking-wider uppercase opacity-50">
-                            Interactive Knowledge Map
+                <div className="board reveal rounded-2xl p-3 sm:p-4 font-mono">
+                    <div className="flex items-center justify-between gap-3 pb-3 pl-1">
+                        <p className="flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-(--flap-ink)">
+                            <Wrench className="w-3.5 h-3.5" aria-hidden="true" />
+                            <Swap dev="Stack" pm="Toolkit" />
                         </p>
+                        <PerspectiveSwitch />
                     </div>
-                    <InViewport rootMargin="400px" className="w-full h-[600px] md:h-[800px]">
-                        <SkillsCanvas mode={mode} />
-                    </InViewport>
-                </motion.div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                    <SpokenToolchain face="dev" />
+                    <SpokenToolchain face="pm" />
 
-                    {/* Soft Skills */}
-                    <motion.div
-                        initial={{ opacity: 0, x: -30 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                    >
-                        <h3 className="text-3xl font-bold mb-8 flex items-center gap-3">
-                            <Brain className="w-8 h-8 text-purple-500" />
-                            Soft Skills
-                        </h3>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            {softSkills.map((skill, idx) => (
-                                <motion.div
-                                    key={idx}
-                                    whileHover={{ scale: 1.02 }}
-                                    className="flex items-center gap-4 p-4 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 hover:bg-white dark:hover:bg-white/10 hover:shadow-lg transition-all"
-                                >
-                                    <div className="text-purple-500">
-                                        {skill.icon}
-                                    </div>
-                                    <span className="font-semibold text-lg">{skill.name}</span>
-                                </motion.div>
-                            ))}
-                        </div>
-                    </motion.div>
-
-                    {/* Languages */}
-                    <motion.div
-                        initial={{ opacity: 0, x: 30 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                    >
-                        <h3 className="text-3xl font-bold mb-8 flex items-center gap-3">
-                            <Globe2 className="w-8 h-8 text-blue-500" />
-                            Languages
-                        </h3>
-                        <div className="space-y-6">
-                            {languages.map((lang, idx) => (
-                                <div key={idx} className="bg-white/50 dark:bg-white/5 p-6 rounded-2xl border border-gray-100 dark:border-white/5">
-                                    <div className="flex justify-between items-end mb-2">
-                                        <h4 className="text-xl font-bold">{lang.name}</h4>
-                                        <span className="text-sm font-medium text-muted-foreground">{lang.level}</span>
-                                    </div>
-                                    <div className="h-2 w-full bg-gray-200 dark:bg-white/10 rounded-full overflow-hidden">
-                                        <motion.div
-                                            initial={{ width: 0 }}
-                                            whileInView={{ width: `${lang.percentage}%` }}
-                                            viewport={{ once: true }}
-                                            transition={{ duration: 1, delay: 0.2 }}
-                                            className="h-full bg-linear-to-r from-blue-500 to-purple-500 rounded-full"
-                                        />
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </motion.div>
-
+                    <div className="space-y-2.5 sm:space-y-1.5" aria-hidden="true">
+                        {toolchain.map((line, row) => (
+                            <div key={line.dev.label} className="grid grid-cols-2 gap-1 sm:grid-cols-[7.5rem_repeat(5,minmax(0,1fr))]">
+                                <Flap
+                                    className="col-span-2 sm:col-span-1 text-(--signal)"
+                                    dev={line.dev.label}
+                                    pm={line.pm.label}
+                                    delay={row * WAVE_MS}
+                                />
+                                {line.dev.items.map((item, col) => (
+                                    <Flap
+                                        key={item}
+                                        dev={item}
+                                        pm={line.pm.items[col]}
+                                        delay={(row + col + 1) * WAVE_MS}
+                                    />
+                                ))}
+                            </div>
+                        ))}
+                    </div>
                 </div>
 
+                <div className="mt-6 grid gap-6 lg:grid-cols-2">
+                    <div className="board reveal rounded-2xl p-3 sm:p-4 font-mono">
+                        <h3 className="pb-3 pl-1 text-[11px] uppercase tracking-[0.22em] text-(--flap-ink)">Languages</h3>
+                        <ul className="space-y-1.5">
+                            {languages.map((lang) => (
+                                <li key={lang.name} className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] gap-1">
+                                    <span className="board-cell px-3 py-2 text-xs uppercase tracking-[0.06em] font-semibold">{lang.name}</span>
+                                    <span className="board-cell px-3 py-2 text-xs uppercase tracking-[0.06em] text-(--flap-dim)">{lang.level}</span>
+                                    {/* A ten-segment meter, read as the level text above */}
+                                    <span className="board-cell flex items-center gap-0.5 px-3" aria-hidden="true">
+                                        {Array.from({ length: 10 }, (_, i) => (
+                                            <span
+                                                key={i}
+                                                className={cn("h-3 w-1.5 rounded-[1px]", i < lang.percentage / 10 ? "bg-(--signal)" : "bg-(--board)")}
+                                            />
+                                        ))}
+                                    </span>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+
+                    <div className="board reveal rounded-2xl p-3 sm:p-4 font-mono">
+                        <h3 className="pb-3 pl-1 text-[11px] uppercase tracking-[0.22em] text-(--flap-ink)">Working style</h3>
+                        <ul className="grid grid-cols-2 gap-1.5">
+                            {workingStyle.map((item) => (
+                                <li key={item} className="board-cell px-3 py-2 text-xs uppercase tracking-[0.06em]">{item}</li>
+                            ))}
+                        </ul>
+                    </div>
+                </div>
             </div>
         </section>
     )

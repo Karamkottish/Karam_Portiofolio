@@ -118,9 +118,10 @@ export function AIAssistant() {
               lg:bottom-24 lg:right-8
               xl:bottom-24 xl:right-12 xl:p-5
               2xl:bottom-28 2xl:right-16 2xl:p-6
-              bg-indigo-600 hover:bg-indigo-500 text-white rounded-full shadow-[0_0_20px_rgba(79,70,229,0.5)]"
+              bg-foreground text-background hover:bg-(--signal) rounded-full shadow-lg"
+            aria-label="Ask the AI assistant"
           >
-            <Bot className="w-6 h-6 sm:w-6 sm:h-6 xl:w-7 xl:h-7 2xl:w-8 2xl:h-8 animate-pulse" />
+            <Bot className="w-6 h-6 sm:w-6 sm:h-6 xl:w-7 xl:h-7 2xl:w-8 2xl:h-8" />
             <span className="text-sm xl:text-base 2xl:text-lg font-medium tracking-wide hidden lg:block overflow-hidden max-w-0 group-hover:max-w-xs 2xl:group-hover:max-w-sm transition-all duration-300 whitespace-nowrap">
               Ask AI Assistant
             </span>
@@ -134,7 +135,7 @@ export function AIAssistant() {
             initial={{ opacity: 0, y: 50, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="fixed z-50 flex flex-col bg-background/95 backdrop-blur-xl border border-white/10 shadow-2xl overflow-hidden
+            className="fixed z-50 flex flex-col bg-card border border-border shadow-2xl overflow-hidden
               bottom-4 right-4 left-4 h-[80vh] rounded-2xl
               sm:left-auto sm:right-6 sm:bottom-6 sm:w-[380px] sm:h-[550px] sm:max-h-[85vh]
               lg:right-8 lg:bottom-8 lg:w-[420px] lg:h-[600px]
@@ -142,15 +143,15 @@ export function AIAssistant() {
               2xl:right-16 2xl:bottom-16 2xl:w-[550px] 2xl:h-[800px] 2xl:max-h-[80vh]"
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-4 xl:p-5 2xl:p-6 border-b border-foreground/10 bg-indigo-600/10 dark:bg-indigo-500/20">
+            <div className="flex items-center justify-between p-4 xl:p-5 2xl:p-6 border-b border-border bg-(--board)">
               <div className="flex items-center gap-3 2xl:gap-4">
-                <div className="p-2 2xl:p-3 bg-indigo-600 dark:bg-indigo-500 rounded-full shadow-[0_0_15px_rgba(79,70,229,0.5)]">
-                  <Bot className="w-5 h-5 2xl:w-7 2xl:h-7 text-white" />
+                <div className="p-2 2xl:p-3 bg-(--signal) rounded-full">
+                  <Bot className="w-5 h-5 2xl:w-7 2xl:h-7 text-background" />
                 </div>
                 <div>
                   <h3 className="font-bold text-sm md:text-base xl:text-lg 2xl:text-2xl tracking-tight">Karam's AI Assistant</h3>
                   <p className="text-[10px] md:text-xs 2xl:text-sm text-emerald-500 font-mono tracking-widest font-semibold flex items-center gap-1.5 mt-0.5 2xl:mt-1">
-                    <span className="w-1.5 h-1.5 2xl:w-2 2xl:h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_5px_rgba(16,185,129,0.8)]"></span>
+                    <span className="w-1.5 h-1.5 2xl:w-2 2xl:h-2 rounded-full bg-emerald-500"></span>
                     ONLINE
                   </p>
                 </div>
@@ -169,8 +170,8 @@ export function AIAssistant() {
                 <div key={msg.id} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
                   <div className={`max-w-[85%] p-3.5 xl:p-4 2xl:p-5 text-[15px] xl:text-base 2xl:text-xl leading-relaxed shadow-sm ${
                     msg.role === "user" 
-                      ? "bg-indigo-600 text-white rounded-2xl rounded-tr-sm 2xl:rounded-tr-md" 
-                      : "bg-muted text-foreground border border-white/5 rounded-2xl rounded-tl-sm 2xl:rounded-tl-md"
+                      ? "bg-foreground text-background rounded-2xl rounded-tr-sm 2xl:rounded-tr-md"
+                      : "bg-muted text-foreground border border-border rounded-2xl rounded-tl-sm 2xl:rounded-tl-md"
                   }`}>
                     {msg.content}
                   </div>
@@ -195,12 +196,12 @@ export function AIAssistant() {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Ask about Karam..."
-                  className="w-full bg-black/5 dark:bg-white/5 border border-foreground/20 rounded-full py-3 pl-5 pr-12 xl:py-4 2xl:py-5 xl:pr-14 2xl:pr-16 2xl:pl-8 text-[15px] xl:text-base 2xl:text-xl focus:outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all shadow-inner"
+                  className="w-full bg-black/5 dark:bg-white/5 border border-foreground/20 rounded-full py-3 pl-5 pr-12 xl:py-4 2xl:py-5 xl:pr-14 2xl:pr-16 2xl:pl-8 text-[15px] xl:text-base 2xl:text-xl focus:outline-hidden focus:border-(--signal) focus:ring-1 focus:ring-(--signal) transition-all"
                 />
                 <button
                   type="submit"
                   disabled={!input.trim() || isTyping}
-                  className="absolute right-1.5 2xl:right-2.5 p-2 xl:p-2.5 2xl:p-3 bg-indigo-600 hover:bg-indigo-500 disabled:bg-muted disabled:text-muted-foreground/30 text-white rounded-full transition-all shadow-md active:scale-95"
+                  className="absolute right-1.5 2xl:right-2.5 p-2 xl:p-2.5 2xl:p-3 bg-foreground hover:bg-(--signal) disabled:bg-muted disabled:text-muted-foreground/30 text-background rounded-full transition-all active:scale-95"
                 >
                   <Send className="w-[18px] h-[18px] xl:w-5 xl:h-5 2xl:w-6 2xl:h-6 translate-x-px -translate-y-px" />
                 </button>

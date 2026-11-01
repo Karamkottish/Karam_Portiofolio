@@ -1,11 +1,11 @@
-"use client"
-
-import { useRef, useState } from "react"
-import { motion, useScroll, useTransform, useSpring, useMotionTemplate, useMotionValue } from "framer-motion"
-import { Briefcase, Calendar, MapPin, ChevronRight, Activity, Globe } from "lucide-react"
+import { Globe } from "lucide-react"
 import { FaApple } from "react-icons/fa"
 import { cn } from "@/lib/utils"
-import { usePerspective } from "@/components/PerspectiveProvider"
+import { Pass, type PassLink } from "@/components/ui/Pass"
+import { SectionHeader } from "@/components/ui/SectionHeader"
+import {
+    type YearMonth, currentMonth, formatSpan, longMonth, monthsBetween, parseLocation, parsePeriod, shortMonth, toIndex,
+} from "@/lib/route"
 
 // Data Structure
 type Role = {
@@ -29,6 +29,7 @@ const experiences: ExperienceItem[] = [
         company: "Sama Tech",
         type: "Full-time",
         iosApp: { name: "Sama BTU", url: "https://apps.apple.com/sa/app/sama-btu/id6819293132" },
+        website: { name: "sama-tech.ae/btu", url: "https://sama-tech.ae/btu/" },
         roles: [
             {
                 title: "Full Stack Developer",
@@ -159,188 +160,114 @@ const experiences: ExperienceItem[] = [
     }
 ]
 
-function ExperienceCard({ item, index, mode }: { item: ExperienceItem; index: number; mode: "pm" | "dev" }) {
-    const ref = useRef<HTMLDivElement>(null)
+/** Everything one pass shows, worked out from the raw entry. */
+function toPass(item: ExperienceItem, now: YearMonth) {
+    const periods = item.roles.map((role) => parsePeriod(role.period, now))
+    const starts = periods.map((p) => p.start).filter((ym): ym is YearMonth => ym !== null)
+    const ends = periods.map((p) => p.end).filter((ym): ym is YearMonth => ym !== null)
+    const start = starts.length ? starts.reduce((a, b) => (toIndex(b) < toIndex(a) ? b : a)) : null
+    const end = ends.length ? ends.reduce((a, b) => (toIndex(b) > toIndex(a) ? b : a)) : null
+    const present = periods.some((p) => p.present)
+    const months = start && end ? monthsBetween(start, end) : 0
+    const base = item.roles.map((role) => parseLocation(role.location)).find(Boolean) ?? null
 
-    // Mouse position for spotlight effect
-    const mouseX = useMotionValue(0)
-    const mouseY = useMotionValue(0)
+    const links: PassLink[] = []
+    if (item.iosApp) links.push({ label: item.iosApp.name, href: item.iosApp.url, icon: <FaApple className="size-3.5" aria-hidden="true" /> })
+    if (item.website) links.push({ label: item.website.name, href: item.website.url, icon: <Globe className="size-3.5" aria-hidden="true" /> })
 
-    function handleMouseMove({ currentTarget, clientX, clientY }: React.MouseEvent) {
-        const { left, top } = currentTarget.getBoundingClientRect()
-        mouseX.set(clientX - left)
-        mouseY.set(clientY - top)
+    return {
+        start,
+        from: start ? shortMonth(start) : undefined,
+        to: present ? "NOW" : end ? shortMonth(end) : "—",
+        duration: months ? formatSpan(months) : undefined,
+        routeLabel: [
+            start && `${longMonth(start)} to ${present ? "now" : end ? longMonth(end) : "unknown"}`,
+            months && formatSpan(months, true),
+        ].filter(Boolean).join(", "),
+        status: present ? ("in-flight" as const) : ("landed" as const),
+        base,
+        tags: [...new Set(item.roles.flatMap((role) => role.skills ?? []))],
+        links,
     }
+}
+
+function Legs({ roles }: { roles: Role[] }) {
+    const multiple = roles.length > 1
 
     return (
-        <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.5, delay: index * 0.1 }}
-            className="group relative"
-        >
-            <div
-                className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-8 shadow-2xl backdrop-blur-md dark:border-white/5 dark:bg-black/20"
-                onMouseMove={handleMouseMove}
-            >
-                {/* Spotlight Effect */}
-                <motion.div
-                    className="pointer-events-none absolute -inset-px opacity-0 transition duration-300 group-hover:opacity-100"
-                    style={{
-                        background: useMotionTemplate`
-              radial-gradient(
-                650px circle at ${mouseX}px ${mouseY}px,
-                rgba(129, 140, 248, 0.15),
-                transparent 80%
-              )
-            `,
-                    }}
-                />
-
-                <div className="relative z-10 flex flex-col md:flex-row gap-6">
-                    {/* Company Info - Left Side on Desktop */}
-                    <div className="md:w-1/3 flex flex-col border-b md:border-b-0 md:border-r border-white/10 pb-4 md:pb-0 md:pr-6">
-                        <h3 className={cn(
-                            "text-2xl font-bold text-transparent bg-clip-text bg-linear-to-r",
-                            mode === "pm" ? "from-purple-500 to-pink-500 dark:from-purple-400 dark:to-pink-400" : "from-blue-500 to-cyan-500 dark:from-blue-400 dark:to-cyan-400"
-                        )}>
-                            {item.company}
-                        </h3>
-                        <span className={cn(
-                            "inline-block mt-2 px-3 py-1 rounded-full text-xs font-semibold w-fit",
-                            mode === "pm" ? "bg-purple-500/10 text-purple-600 dark:text-purple-400" : "bg-blue-500/10 text-blue-600 dark:text-blue-400"
-                        )}>
-                            {item.type}
-                        </span>
-                        {(item.iosApp || item.website) && (
-                            <div className="mt-4 flex flex-wrap gap-2">
-                                {item.iosApp && (
-                                    <a
-                                        href={item.iosApp.url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        aria-label={`Open ${item.iosApp.name} on the App Store`}
-                                        title={`${item.iosApp.name} on the App Store`}
-                                        className="inline-flex items-center gap-2 w-fit rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-foreground transition-colors hover:bg-primary/10 hover:text-primary"
-                                    >
-                                        <FaApple className="h-4 w-4" />
-                                        {item.iosApp.name}
-                                    </a>
-                                )}
-                                {item.website && (
-                                    <a
-                                        href={item.website.url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        aria-label={`Visit ${item.website.name}`}
-                                        title={`Visit ${item.website.name}`}
-                                        className="inline-flex items-center gap-2 w-fit rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-foreground transition-colors hover:bg-primary/10 hover:text-primary"
-                                    >
-                                        <Globe className="h-4 w-4" />
-                                        {item.website.name}
-                                    </a>
-                                )}
-                            </div>
+        <ol className={cn("space-y-4", multiple && "border-l border-border pl-4")}>
+            {roles.map((role) => (
+                <li key={role.title + role.period} className="relative">
+                    {multiple && (
+                        <span className="absolute -left-[21px] top-2 size-2.5 rounded-full border-2 border-(--signal) bg-card" aria-hidden="true" />
+                    )}
+                    <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+                        <h4 className="text-lg font-semibold leading-snug text-foreground">{role.title}</h4>
+                        {multiple && (
+                            <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">{role.period}</span>
                         )}
                     </div>
-
-                    {/* Roles - Right Side */}
-                    <div className="md:w-2/3 space-y-6">
-                        {item.roles.map((role, rIndex) => (
-                            <div key={rIndex} className={cn(
-                                "relative pl-6 border-l-2",
-                                rIndex === item.roles.length - 1 ? "pb-0 border-transparent" : "pb-6 border-white/10"
-                            )}>
-                                {/* Timeline dot */}
-                                <motion.div
-                                    initial={{ scale: 0 }}
-                                    whileInView={{ scale: 1 }}
-                                    viewport={{ once: true }}
-                                    className={cn(
-                                        "absolute -left-[9px] top-0 h-4 w-4 rounded-full border-2 border-background",
-                                        mode === "pm" ? "bg-purple-500" : "bg-blue-500"
-                                    )}
-                                />
-
-                                <div className="flex flex-wrap gap-2 items-center text-sm text-muted-foreground mb-1">
-                                    <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> {role.period}</span>
-                                    {role.location && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> {role.location}</span>}
-                                </div>
-
-                                <h4 className="text-xl font-semibold text-foreground mb-2">{role.title}</h4>
-
-                                {role.description && (
-                                    <p className="text-muted-foreground text-sm mb-3 leading-relaxed">
-                                        {role.description}
-                                    </p>
-                                )}
-
-                                {role.skills && (
-                                    <div className="flex flex-wrap gap-2 mt-3">
-                                        {role.skills.map(skill => (
-                                            <span key={skill} className="px-2 py-1 text-[10px] uppercase tracking-wider rounded border border-white/10 bg-white/5 text-primary/80 hover:bg-primary/10 transition-colors">
-                                                {skill}
-                                            </span>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
-        </motion.div>
+                    {role.description && <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{role.description}</p>}
+                </li>
+            ))}
+        </ol>
     )
 }
 
 export function Experience() {
-    const { mode } = usePerspective()
-    const containerRef = useRef<HTMLDivElement>(null)
-    const { scrollYProgress } = useScroll({
-        target: containerRef,
-        offset: ["start end", "end start"]
-    })
+    // Static export: "now" is the build date, which is also when "Present" roles were last true
+    const now = currentMonth()
+    const passes = experiences.map((item) => ({ item, pass: toPass(item, now) }))
+    const roleCount = experiences.reduce((sum, item) => sum + item.roles.length, 0)
+    const earliest = passes
+        .map(({ pass }) => pass.start)
+        .filter((ym): ym is YearMonth => ym !== null)
+        .reduce((a, b) => (toIndex(b) < toIndex(a) ? b : a))
 
     return (
-        <section id="experience" className="relative py-24 min-h-screen overflow-hidden bg-background">
-            {/* Dynamic Background Elements */}
-            <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute top-[10%] left-[50%] -translate-x-1/2 w-[800px] h-[800px] bg-blue-500/5 rounded-full blur-3xl opacity-20 dark:opacity-10" />
-                <div className="absolute bottom-[10%] left-[20%] w-[600px] h-[600px] bg-purple-500/5 rounded-full blur-3xl opacity-20 dark:opacity-10" />
-            </div>
+        <section id="experience" className="relative py-24 md:py-32 bg-background">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <SectionHeader
+                    index="02"
+                    label="Logbook"
+                    title={{ dev: "Where I've shipped", pm: "Where I've led" }}
+                    subtitle={{
+                        dev: "Every role as a pass: when it ran, where it was based, and what I built there.",
+                        pm: "The teams I've led and served, with dates, base and what each role owned.",
+                    }}
+                    meta={`${experiences.length} companies · ${roleCount} roles · since ${shortMonth(earliest)}`}
+                />
 
-            <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" ref={containerRef}>
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    className="text-center mb-16"
-                >
-                    <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">
-                        {mode === "pm" ? "Product Leadership" : "Professional"}{" "}
-                        <span className={cn(
-                            "text-transparent bg-clip-text bg-linear-to-r",
-                            mode === "pm" ? "from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400" : "from-blue-600 to-cyan-600 dark:from-blue-400 dark:to-cyan-400"
-                        )}>
-                            Experience
-                        </span>
-                    </h2>
-                    <p className="text-muted-foreground max-w-2xl mx-auto">
-                        {mode === "pm"
-                            ? "A timeline of delivering user-centric products and leading cross-functional teams."
-                            : "A progressive journey through complex software development and technical leadership."}
-                    </p>
-                </motion.div>
-
-                {/* Timeline Progress Line connecting everything conceptually */}
-                <div className="absolute left-[50%] top-[300px] bottom-[100px] w-px bg-linear-to-b from-transparent via-primary/20 to-transparent hidden xl:block z-0" />
-
-                <div className="flex flex-col gap-8 relative z-10">
-                    {experiences.map((item, index) => (
-                        <ExperienceCard key={index} item={item} index={index} mode={mode} />
+                <ol className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                    {passes.map(({ item, pass }, index) => (
+                        <li key={item.company} className="flex">
+                            <Pass
+                                className="w-full"
+                                serial={String(index + 1).padStart(2, "0")}
+                                kicker={item.type}
+                                title={item.company}
+                                status={pass.status}
+                                from={pass.from}
+                                to={pass.to}
+                                duration={pass.duration}
+                                routeLabel={pass.routeLabel}
+                                fields={[
+                                    {
+                                        label: "Base",
+                                        value: pass.base ? `${pass.base.code} · ${pass.base.city}` : "—",
+                                        title: pass.base?.place,
+                                    },
+                                    { label: "Mode", value: pass.base?.mode ?? "—" },
+                                    { label: "Roles", value: item.roles.length },
+                                ]}
+                                tags={pass.tags}
+                                links={pass.links}
+                            >
+                                <Legs roles={item.roles} />
+                            </Pass>
+                        </li>
                     ))}
-                </div>
+                </ol>
             </div>
         </section>
     )

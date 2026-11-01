@@ -2,23 +2,22 @@
 
 import { useRef, useState, useEffect } from "react"
 import { createPortal } from "react-dom"
-import { motion, useMotionTemplate, useMotionValue, AnimatePresence } from "framer-motion"
-import dynamic from "next/dynamic"
-import { Github, ExternalLink, Folders, Smartphone, Globe, MessageSquare, Leaf, Rocket, PlayCircle, X } from "lucide-react"
-import { InViewport } from "@/components/canvas/InViewport"
+import { motion, AnimatePresence } from "framer-motion"
+import { Github, ExternalLink, Folders, Smartphone, Globe, MessageSquare, Leaf, Rocket, PlayCircle, X, Building2, Car } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { usePerspective } from "@/components/PerspectiveProvider"
-
-const ProjectCanvas = dynamic(() => import("@/components/canvas/ProjectCanvas"), { ssr: false })
+import { SectionHeader } from "@/components/ui/SectionHeader"
+import { SAMA_BTU_APP_ID, SAMA_BTU_APP_STORE_URL, appStoreListing } from "@/data/app-store"
 
 // Icons
 import {
-    FaReact, FaPhp, FaAws, FaGithub, FaStripe, FaPython, FaAndroid
+    FaReact, FaPhp, FaAws, FaGithub, FaStripe, FaPython, FaAndroid, FaApple
 } from "react-icons/fa"
 import {
     SiTailwindcss, SiThreedotjs, SiVite, SiFirebase, SiFlutter,
     SiFastapi, SiMysql, SiSqlite, SiDjango, SiOpencv,
-    SiJavascript, SiTypescript, SiNasa
+    SiJavascript, SiTypescript, SiNasa,
+    SiNestjs, SiPostgresql, SiPrisma, SiRedis, SiCloudflare
 } from "react-icons/si"
 import { TbBrandNextjs, TbApi, TbDatabase, TbWorld } from "react-icons/tb"
 import { MdOutlineCleanHands, MdArchitecture, MdLanguage } from "react-icons/md"
@@ -35,9 +34,9 @@ type Project = {
     description: string
     techStack: TechItem[]
     icon: React.ReactNode
-    color: string // For accent gradients
     github?: string
     website?: string
+    ios?: string // App Store listing
     android?: string | "coming_soon"
     pmDescription?: string
     pmRole?: string
@@ -72,7 +71,45 @@ const Icons = {
     Lang: MdLanguage
 }
 
+// Version and date come from the App Store at build time (scripts/fetch-app-store.mjs)
+const samaBtu = appStoreListing(SAMA_BTU_APP_ID)
+
 const projects: Project[] = [
+    {
+        title: "Sama BTU",
+        role: "Full Stack Developer",
+        year: samaBtu?.released.slice(0, 4) ?? "2026",
+        description: `Property and energy-billing platform: buildings, apartments and tenants in one workspace, per-apartment BTU consumption from sensors, scheduled billing cycles, Stripe card payments and live push alerts, in English, Arabic and Urdu. ${samaBtu ? `iOS app v${samaBtu.version} is live on the App Store.` : "The iOS app is live on the App Store."}`,
+        pmDescription: "Four user types (admin, investor, employee, tenant) with a visual permission builder, billing rules set once and run on a schedule, and reminders by app, email and SMS to speed up collection. Full right-to-left support for the region.",
+        techStack: [
+            { name: "React", icon: FaReact },
+            { name: "Vite", icon: SiVite },
+            { name: "Tailwind CSS", icon: SiTailwindcss },
+            { name: "Firebase Push", icon: SiFirebase },
+            { name: "Stripe", icon: FaStripe },
+            { name: "EN · AR · UR", icon: MdLanguage }
+        ],
+        icon: <Building2 className="w-10 h-10" />,
+        ios: samaBtu?.url ?? SAMA_BTU_APP_STORE_URL,
+        website: "https://sama-tech.ae/btu/"
+    },
+    {
+        title: "Kol Shei",
+        role: "Full Stack Developer",
+        year: "2026",
+        description: "Online store for spare parts for Chinese cars, shipped from China to Damascus. A VIN check blocks wrong orders before checkout, a 50% Sham Cash deposit commits each order, and a four-stage timeline tracks it to pickup. I built the Next.js site and the NestJS API behind it. Live in demo mode until payments are connected.",
+        pmDescription: "Shaped the brief into a launch scope: a triple check (VIN, model, photo) against wrong orders, deposit-first payments so no factory order goes out unpaid, and a staff console for orders, stock and handover. Live in demo mode until payments are connected.",
+        techStack: [
+            { name: "Next.js", icon: TbBrandNextjs },
+            { name: "NestJS", icon: SiNestjs },
+            { name: "PostgreSQL", icon: SiPostgresql },
+            { name: "Prisma", icon: SiPrisma },
+            { name: "Redis", icon: SiRedis },
+            { name: "Cloudflare", icon: SiCloudflare }
+        ],
+        icon: <Car className="w-10 h-10" />,
+        website: "https://kol-shei.com/"
+    },
     {
         title: "Paws Pal Connect",
         role: "Product Manager • Full Stack Developer",
@@ -88,7 +125,6 @@ const projects: Project[] = [
             { name: "AI Integration", icon: TbApi }
         ],
         icon: <Folders className="w-10 h-10" />,
-        color: "from-blue-500 to-cyan-500",
         github: "https://github.com/pawspalconnect/ppc",
         website: "https://www.pawspalconnect.com/",
         android: "coming_soon"
@@ -106,7 +142,6 @@ const projects: Project[] = [
             { name: "Physics", icon: MdArchitecture }
         ],
         icon: <Rocket className="w-10 h-10" />,
-        color: "from-violet-600 to-indigo-600",
         github: "https://github.com/Karamkottish/Solarsystem3D"
     },
     {
@@ -121,7 +156,6 @@ const projects: Project[] = [
             { name: "Vision 2030", icon: Globe as React.ComponentType<any> }
         ],
         icon: <Leaf className="w-10 h-10" />,
-        color: "from-green-600 to-emerald-600",
         github: "https://github.com/Karamkottish/BustaniPlus",
         video: `${process.env.NEXT_PUBLIC_BASE_PATH || ""}/Bustaniapp-video.mp4`
     },
@@ -137,7 +171,6 @@ const projects: Project[] = [
             { name: "Full Stack", icon: TbDatabase }
         ],
         icon: <Smartphone className="w-10 h-10" />,
-        color: "from-orange-500 to-red-500",
         github: "https://github.com/Karamkottish/MyUniversity"
     },
     {
@@ -154,7 +187,6 @@ const projects: Project[] = [
             { name: "Clean UI", icon: MdOutlineCleanHands }
         ],
         icon: <Globe className="w-10 h-10" />,
-        color: "from-emerald-500 to-green-500",
         github: "https://github.com/AbdallahZagh/E-commerce-web/tree/store_dashboard"
     },
     {
@@ -169,7 +201,6 @@ const projects: Project[] = [
             { name: "Secure Auth", icon: MdArchitecture }
         ],
         icon: <MessageSquare className="w-10 h-10" />,
-        color: "from-violet-500 to-fuchsia-500",
         github: "https://github.com/AbdallahZagh/chatly"
     },
     {
@@ -184,7 +215,6 @@ const projects: Project[] = [
             { name: "Clean Arch", icon: MdArchitecture }
         ],
         icon: <Smartphone className="w-10 h-10" />,
-        color: "from-amber-500 to-yellow-500",
         github: "https://github.com/Karamkottish/WareHouse-Flutter"
     },
     {
@@ -199,7 +229,6 @@ const projects: Project[] = [
             { name: "Firebase", icon: SiFirebase }
         ],
         icon: <Smartphone className="w-10 h-10" />,
-        color: "from-purple-500 to-pink-500",
         github: "https://gitlab.com/revonix1/revonix-frontend"
     },
     {
@@ -214,7 +243,6 @@ const projects: Project[] = [
             { name: "Responsive", icon: Smartphone as React.ComponentType<any> }
         ],
         icon: <Smartphone className="w-10 h-10" />,
-        color: "from-teal-500 to-emerald-500",
         github: "#"
     },
     {
@@ -228,14 +256,32 @@ const projects: Project[] = [
             { name: "Analytics", icon: TbDatabase }
         ],
         icon: <Smartphone className="w-10 h-10" />,
-        color: "from-indigo-500 to-blue-500",
         github: "https://github.com/Karamkottish/Change-ASPU/tree/flutter"
     }
 ]
 
+// Anchor the hero's departures board links to, e.g. "#project-paws-pal-connect"
+function projectAnchor(title: string) {
+    return `project-${title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}`
+}
+
+// An icon link in a card's header; the label is the tooltip and what screen readers hear
+function CardLink({ href, label, children }: { href: string; label: string; children: React.ReactNode }) {
+    return (
+        <a
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={label}
+            title={label}
+            className="relative z-20 rounded-md p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-(--signal) focus-visible:outline-2 focus-visible:outline-ring"
+        >
+            {children}
+        </a>
+    )
+}
+
 function ProjectCard({ project, index, mode }: { project: Project; index: number; mode: "pm" | "dev" }) {
-    const mouseX = useMotionValue(0)
-    const mouseY = useMotionValue(0)
     const videoRef = useRef<HTMLVideoElement>(null)
     const [isHovered, setIsHovered] = useState(false)
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -244,12 +290,6 @@ function ProjectCard({ project, index, mode }: { project: Project; index: number
     useEffect(() => {
         setMounted(true)
     }, [])
-
-    function handleMouseMove({ currentTarget, clientX, clientY }: React.MouseEvent) {
-        const { left, top } = currentTarget.getBoundingClientRect()
-        mouseX.set(clientX - left)
-        mouseY.set(clientY - top)
-    }
 
     function handleMouseEnter() {
         setIsHovered(true)
@@ -268,12 +308,9 @@ function ProjectCard({ project, index, mode }: { project: Project; index: number
     }
 
     return (
-        <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
-            transition={{ duration: 0.5, delay: index * 0.1 }}
-            className="group relative h-full"
+        <div
+            id={projectAnchor(project.title)}
+            className="reveal group relative h-full scroll-mt-24"
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
         >
@@ -284,10 +321,11 @@ function ProjectCard({ project, index, mode }: { project: Project; index: number
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            className="fixed inset-0 z-100 flex items-center justify-center bg-black/90 backdrop-blur-md p-4 sm:p-8"
+                            className="fixed inset-0 z-100 flex items-center justify-center bg-black/85 p-4 sm:p-8"
                             onClick={() => setIsModalOpen(false)}
                         >
-                            <button 
+                            <button
+                                aria-label="Close video"
                                 className="absolute top-6 right-6 p-2 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 rounded-full transition-colors z-101"
                                 onClick={(e) => {
                                     e.stopPropagation();
@@ -300,7 +338,7 @@ function ProjectCard({ project, index, mode }: { project: Project; index: number
                                 initial={{ scale: 0.95, opacity: 0, y: 20 }}
                                 animate={{ scale: 1, opacity: 1, y: 0 }}
                                 exit={{ scale: 0.95, opacity: 0, y: 20 }}
-                                className="relative w-full max-w-5xl aspect-video rounded-2xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/10 bg-black"
+                                className="relative w-full max-w-5xl aspect-video rounded-2xl overflow-hidden border border-white/10 bg-black"
                                 onClick={(e) => e.stopPropagation()}
                             >
                                 <video
@@ -316,147 +354,110 @@ function ProjectCard({ project, index, mode }: { project: Project; index: number
                 </AnimatePresence>,
                 document.body
             )}
-            <div
-                className="relative h-full overflow-hidden rounded-3xl border border-gray-200 dark:border-white/10 bg-white/50 dark:bg-zinc-900/50 backdrop-blur-xl p-8 hover:shadow-2xl transition-all duration-300 group-hover:-translate-y-2"
-                onMouseMove={handleMouseMove}
-            >
+            <article className="relative flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card transition-[border-color,transform] duration-300 hover:-translate-y-1 hover:border-(--signal)/50">
                 {/* Background Video */}
                 {project.video && (
                     <div
                         className={cn(
-                            "absolute inset-0 z-0 overflow-hidden rounded-3xl transition-opacity duration-700 pointer-events-none",
+                            "absolute inset-0 z-0 overflow-hidden transition-opacity duration-700 pointer-events-none",
                             isHovered ? "opacity-100" : "opacity-0"
                         )}
                     >
                         <video
                             ref={videoRef}
                             src={project.video}
-                            className="w-full h-full object-cover opacity-20 dark:opacity-30 mix-blend-overlay"
+                            className="w-full h-full object-cover opacity-20 dark:opacity-30"
                             loop
                             muted
                             playsInline
                             preload="none"
                         />
-                        <div className="absolute inset-0 bg-linear-to-t from-background/80 via-background/40 to-transparent dark:from-zinc-900/80 dark:via-zinc-900/40" />
+                        <div className="absolute inset-0 bg-linear-to-t from-card via-card/70 to-card/20" />
                     </div>
                 )}
-                {/* Gradient Glow Effect on Hover */}
-                <motion.div
-                    className="pointer-events-none absolute -inset-px opacity-0 transition duration-300 group-hover:opacity-100"
-                    style={{
-                        background: useMotionTemplate`
-                    radial-gradient(
-                        600px circle at ${mouseX}px ${mouseY}px,
-                        rgba(255, 255, 255, 0.1),
-                        transparent 80%
-                    )
-                    `,
-                    }}
-                />
-                {/* Color Accent Line */}
-                <div className={cn("absolute top-0 left-0 w-full h-1 bg-linear-to-r opacity-50 group-hover:opacity-100 transition-opacity", project.color)} />
 
-                <div className="flex flex-col h-full relative z-10">
-                    <div className="flex justify-between items-start mb-6">
-                        <div className={cn("p-4 rounded-2xl bg-linear-to-br opacity-80 group-hover:opacity-100 transition-all shadow-lg text-white", project.color)}>
+                <header className="relative z-10 flex items-center justify-between gap-3 border-b border-border px-6 py-3">
+                    <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                        <span className="text-(--signal)">{String(index + 1).padStart(2, "0")}</span> · {project.year}
+                    </p>
+                    <div className="-mr-2 flex items-center">
+                        {project.video && (
+                            <button
+                                type="button"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    setIsModalOpen(true);
+                                }}
+                                aria-label={`Watch the ${project.title} video`}
+                                title="Watch video"
+                                className="relative z-20 rounded-md p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-(--signal) focus-visible:outline-2 focus-visible:outline-ring"
+                            >
+                                <PlayCircle className="w-[18px] h-[18px]" />
+                            </button>
+                        )}
+                        {project.android && (
+                            project.android === "coming_soon" ? (
+                                <span title="Android version coming soon" className="p-2 text-muted-foreground/60 cursor-not-allowed">
+                                    <FaAndroid className="w-[18px] h-[18px]" aria-hidden="true" />
+                                    <span className="sr-only">Android version coming soon</span>
+                                </span>
+                            ) : (
+                                <CardLink href={project.android} label={`${project.title} on Google Play`}>
+                                    <FaAndroid className="w-[18px] h-[18px]" />
+                                </CardLink>
+                            )
+                        )}
+                        {project.ios && (
+                            <CardLink href={project.ios} label={`${project.title} on the App Store`}>
+                                <FaApple className="w-[18px] h-[18px]" />
+                            </CardLink>
+                        )}
+                        {project.website && (
+                            <CardLink href={project.website} label={`Visit the ${project.title} website`}>
+                                <ExternalLink className="w-[18px] h-[18px]" />
+                            </CardLink>
+                        )}
+                        {project.github && project.github !== "#" && (
+                            <CardLink href={project.github} label={`${project.title} source code`}>
+                                <Github className="w-[18px] h-[18px]" />
+                            </CardLink>
+                        )}
+                    </div>
+                </header>
+
+                <div className="relative z-10 flex flex-1 flex-col px-6 pt-5 pb-6">
+                    <div className="flex items-center gap-3">
+                        <span className="grid size-11 shrink-0 place-items-center rounded bg-muted text-(--signal) [&_svg]:size-5" aria-hidden="true">
                             {project.icon}
-                        </div>
-                        <div className="flex gap-2 relative">
-                            {project.video && (
-                                <div className="group/video relative flex items-center justify-center p-2 rounded-full cursor-pointer hover:bg-black/5 dark:hover:bg-white/10 transition-colors z-20">
-                                    <button
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            e.stopPropagation();
-                                            setIsModalOpen(true);
-                                        }}
-                                        className="flex items-center justify-center w-full h-full"
-                                    >
-                                        <PlayCircle className="w-5 h-5 text-muted-foreground hover:text-foreground" />
-                                    </button>
-                                    <span className="absolute -top-10 left-1/2 -translate-x-1/2 px-2 py-1 bg-black dark:bg-white text-white dark:text-black text-xs rounded opacity-0 group-hover/video:opacity-100 transition-opacity pointer-events-none whitespace-nowrap font-bold">
-                                        Watch Video
-                                    </span>
-                                </div>
-                            )}
-                            {project.android && (
-                                project.android === "coming_soon" ? (
-                                    <div className="group/android relative flex items-center justify-center p-2 rounded-full cursor-not-allowed hover:bg-black/5 dark:hover:bg-white/10 transition-colors z-20">
-                                        <FaAndroid className="w-5 h-5 text-muted-foreground" />
-                                        <span className="absolute -top-10 left-1/2 -translate-x-1/2 px-2 py-1 bg-black dark:bg-white text-white dark:text-black text-xs rounded opacity-0 group-hover/android:opacity-100 transition-opacity pointer-events-none whitespace-nowrap font-bold">
-                                            Coming Soon
-                                        </span>
-                                    </div>
-                                ) : (
-                                    <a
-                                        href={project.android}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer transition-colors z-20"
-                                    >
-                                        <FaAndroid className="w-5 h-5 text-muted-foreground hover:text-foreground" />
-                                    </a>
-                                )
-                            )}
-                            {project.website && (
-                                <a
-                                    href={project.website}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer transition-colors z-20"
-                                >
-                                    <ExternalLink className="w-5 h-5 text-muted-foreground hover:text-foreground" />
-                                </a>
-                            )}
-                            {project.github && (
-                                <a
-                                    href={project.github}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer transition-colors z-20"
-                                >
-                                    <Github className="w-5 h-5 text-muted-foreground hover:text-foreground" />
-                                </a>
-                            )}
-                        </div>
+                        </span>
+                        <p className="font-mono text-[11px] uppercase leading-snug tracking-[0.12em] text-muted-foreground">
+                            {mode === "pm" && project.pmRole ? project.pmRole : project.role}
+                        </p>
                     </div>
 
-                    <div className="mb-4">
-                        <div className="flex items-center gap-2 mb-2">
-                            <span className={cn("text-xs font-bold px-2 py-0.5 rounded text-white bg-linear-to-r", project.color)}>
-                                {project.year}
-                            </span>
-                            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                                {mode === "pm" && project.pmRole ? project.pmRole : project.role}
-                            </span>
-                        </div>
-                        <h3 className="text-2xl font-bold text-foreground group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-linear-to-r group-hover:from-white group-hover:to-gray-400 dark:group-hover:from-white dark:group-hover:to-gray-400 transition-all">
-                            {project.title}
-                        </h3>
-                    </div>
+                    <h3 className="mt-4 font-display text-4xl font-extrabold uppercase leading-[0.9] tracking-tight text-foreground">
+                        {project.title}
+                    </h3>
 
-                    <p className="text-muted-foreground text-sm leading-relaxed mb-6 grow">
+                    <p className="mt-3 grow text-sm leading-relaxed text-muted-foreground">
                         {mode === "pm" && project.pmDescription ? project.pmDescription : project.description}
                     </p>
 
-                    <div className="flex flex-wrap gap-3 mt-auto">
-                        {project.techStack.map((tech, idx) => {
+                    <ul className="mt-6 flex flex-wrap gap-1.5" aria-label="Stack">
+                        {project.techStack.map((tech) => {
                             const Icon = tech.icon
                             return (
-                                <div key={idx} className="group/icon relative">
-                                    <div className="p-2 rounded-xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 text-muted-foreground hover:text-foreground hover:bg-black/10 dark:hover:bg-white/10 transition-colors cursor-help">
-                                        <Icon className="w-5 h-5" />
-                                    </div>
-                                    <span className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-black dark:bg-white text-white dark:text-black text-xs rounded opacity-0 group-hover/icon:opacity-100 transition-opacity pointer-events-none whitespace-nowrap font-bold">
-                                        {tech.name}
-                                    </span>
-                                </div>
+                                <li key={tech.name} className="inline-flex items-center gap-1.5 rounded bg-muted px-2 py-1 font-mono text-[10px] uppercase tracking-[0.08em] text-foreground">
+                                    <Icon className="size-3.5 text-muted-foreground" aria-hidden="true" />
+                                    {tech.name}
+                                </li>
                             )
                         })}
-                    </div>
+                    </ul>
                 </div>
-            </div>
-        </motion.div>
+            </article>
+        </div>
     )
 }
 
@@ -464,37 +465,22 @@ export function Projects() {
     const { mode } = usePerspective()
 
     return (
-        <section id="projects" className="relative py-24 min-h-screen bg-background overflow-hidden">
-            {/* 3D Background */}
-            <InViewport rootMargin="400px" className="absolute inset-0 z-0">
-                <ProjectCanvas />
-            </InViewport>
+        <section id="projects" className="relative py-24 md:py-32 bg-background">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <SectionHeader
+                    index="04"
+                    label="Case files"
+                    title={{ dev: "Featured projects", pm: "Product case studies" }}
+                    subtitle={{
+                        dev: "Recent technical work, from shipped mobile apps to web platforms and the APIs behind them.",
+                        pm: "Product lifecycles I've owned or shaped, with the strategy and the outcome.",
+                    }}
+                    meta={`${projects.length} case files`}
+                />
 
-            <div className="absolute inset-0 bg-background/50 dark:bg-background/80 backdrop-blur-[1px] z-0" />
-
-            <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    className="text-center mb-16"
-                >
-                    <h2 className="text-4xl md:text-5xl font-black mb-6 tracking-tight">
-                        {mode === "pm" ? "Product" : "Featured"}{" "}
-                        <span className="text-transparent bg-clip-text bg-linear-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
-                            {mode === "pm" ? "Case Studies" : "Projects"}
-                        </span>
-                    </h2>
-                    <p className="text-muted-foreground max-w-2xl mx-auto text-lg hover:italic transition-all">
-                        {mode === "pm"
-                            ? "A selection of successful product lifecycles, emphasizing strategy, roadmapping, and user impact."
-                            : "A selection of my recent technical work, ranging from mobile applications to complex web platforms."}
-                    </p>
-                </motion.div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                     {projects.map((project, index) => (
-                        <ProjectCard key={index} project={project} index={index} mode={mode} />
+                        <ProjectCard key={project.title} project={project} index={index} mode={mode} />
                     ))}
                 </div>
             </div>

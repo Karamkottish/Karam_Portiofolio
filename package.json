@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node scripts/fetch-app-store.mjs",
     "build": "next build",
+    "app-store": "node scripts/fetch-app-store.mjs",
     "start": "next start",
     "lint": "eslint"
   },

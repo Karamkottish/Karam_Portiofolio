@@ -25,6 +25,8 @@ export function PerspectiveProvider({ children }: { children: React.ReactNode })
     const handleSetMode = (newMode: PerspectiveMode) => {
         setMode(newMode)
         localStorage.setItem("perspective_mode", newMode)
+        // CSS-driven UI (the hero board) reads this attribute; the layout script sets it before paint
+        document.documentElement.dataset.perspective = newMode
     }
 
     const toggleMode = () => {

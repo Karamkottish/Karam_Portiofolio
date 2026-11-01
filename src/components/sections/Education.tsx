@@ -1,188 +1,87 @@
-"use client"
-
-import { useRef } from "react"
-import { motion, useScroll, useTransform } from "framer-motion"
-import dynamic from "next/dynamic"
-import { GraduationCap, School, Calendar, MapPin, Award, BookOpen } from "lucide-react"
-import { InViewport } from "@/components/canvas/InViewport"
-import { cn } from "@/lib/utils"
-import { usePerspective } from "@/components/PerspectiveProvider"
-
-const EducationCanvas = dynamic(() => import("@/components/canvas/EducationCanvas"), { ssr: false })
-// Import icons for the specific institutions (using generic lucide for now, but conceptualizing placeholders)
+import { Pass } from "@/components/ui/Pass"
+import { SectionHeader } from "@/components/ui/SectionHeader"
+import { currentMonth, formatSpan, parseLocation } from "@/lib/route"
 
 type EducationItem = {
     school: string
     degree: string
-    years: string
-    skills: string
+    /** Short name of the qualification for the pass header */
+    award: string
+    field: string
+    from?: number
+    /** Graduation, or omit while still studying */
+    to?: { label: string; spoken: string; year: number }
     location: string
-    logo?: any // Component or string
-    color: string
+    tags: string[]
 }
 
 const educationData: EducationItem[] = [
     {
         school: "Al-Sham Private University",
         degree: "Bachelor of Engineering, Informatics Engineering",
-        years: "2020 - Present",
-        skills: "Gitlab, Coding Standards and +12 skills",
+        award: "Bachelor of Engineering",
+        field: "Informatics",
+        from: 2020,
         location: "Damascus, Syria",
-        color: "from-amber-400 to-orange-500"
+        tags: ["GitLab", "Coding standards", "+12 skills"],
     },
     {
         school: "Future Window International School",
         degree: "High School Diploma, High School/Secondary Diplomas and Certificates",
-        years: "May 2018",
-        skills: "Scientific Section",
+        award: "High school diploma",
+        field: "Scientific",
+        to: { label: "MAY 18", spoken: "May 2018", year: 2018 },
         location: "Riyadh, Saudi Arabia",
-        color: "from-blue-400 to-indigo-500"
-    }
+        tags: ["Scientific section"],
+    },
 ]
 
-function EducationCard({ item, index, mode }: { item: EducationItem, index: number, mode: "pm" | "dev" }) {
-    const isEven = index % 2 === 0
-
-    return (
-        <motion.div
-            initial={{ opacity: 0, x: isEven ? -50 : 50, y: 20 }}
-            whileInView={{ opacity: 1, x: 0, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
-            transition={{ duration: 0.6, delay: index * 0.2, type: "spring" }}
-            className={cn(
-                "relative flex items-center gap-4 md:gap-8 mb-12 md:mb-16 last:mb-0",
-                // Mobile: always left-aligned, Desktop: alternating
-                "flex-row md:flex-row",
-                !isEven && "md:flex-row-reverse"
-            )}
-        >
-            {/* Center Node on Timeline - hidden on mobile */}
-            <div className={cn(
-                "hidden md:block absolute left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-white z-20 border-4 border-background shadow-[0_0_20px_rgba(255,255,255,0.5)]",
-                mode === "pm" ? "shadow-purple-500/50" : "shadow-blue-500/50"
-            )} />
-
-            {/* Mobile timeline dot - shown only on mobile */}
-            <div className={cn(
-                "md:hidden shrink-0 w-3 h-3 rounded-full bg-white z-20 border-2 border-background shadow-[0_0_15px_rgba(255,255,255,0.5)]",
-                mode === "pm" ? "shadow-purple-500/50" : "shadow-blue-500/50"
-            )} />
-
-            {/* Content Card */}
-            <div className={cn(
-                "flex-1 md:w-[calc(50%-2rem)]",
-                // Mobile: always left-aligned, Desktop: alternating alignment
-                "text-left md:text-left",
-                isEven ? "md:text-right" : "md:text-left"
-            )}>
-                <div className={cn(
-                    "group relative overflow-hidden rounded-2xl bg-white/5 dark:bg-zinc-900/60 backdrop-blur-md border border-white/10 p-4 md:p-6 hover:bg-white/10 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1",
-                    mode === "pm" ? "hover:shadow-purple-500/10" : "hover:shadow-cyan-500/10"
-                )}>
-
-                    {/* Glowing Border Gradient */}
-                    <div className={cn(
-                        "absolute top-0 left-0 w-1 h-full bg-linear-to-b opacity-0 group-hover:opacity-100 transition-opacity duration-300",
-                        mode === "pm" ? "from-purple-400 to-pink-500" : item.color
-                    )} />
-
-                    <div className={cn(
-                        "flex items-center gap-3 md:gap-4 mb-3",
-                        // Mobile: always left-to-right, Desktop: alternating
-                        "flex-row",
-                        isEven ? "md:flex-row-reverse" : "md:flex-row"
-                    )}>
-                        <div className={cn(
-                            "p-2 rounded-lg bg-linear-to-br text-white shadow-lg shrink-0",
-                            mode === "pm" ? "from-purple-500 to-pink-500" : item.color
-                        )}>
-                            {index === 0 ? <GraduationCap className="w-4 h-4 md:w-5 md:h-5" /> : <School className="w-4 h-4 md:w-5 md:h-5" />}
-                        </div>
-                        <h3 className="text-base md:text-xl font-bold leading-tight">{item.school}</h3>
-                    </div>
-
-                    <p className="text-muted-foreground font-medium mb-3 text-xs md:text-sm lg:text-base">
-                        {item.degree}
-                    </p>
-
-                    <div className={cn(
-                        "flex flex-wrap items-center gap-2 md:gap-3 text-xs text-muted-foreground/80 mb-3 md:mb-4",
-                        // Mobile: always left, Desktop: alternating
-                        "justify-start",
-                        isEven ? "md:justify-end" : "md:justify-start"
-                    )}>
-                        <span className="flex items-center gap-1 bg-white/5 px-2 py-1 rounded-full border border-white/5">
-                            <Calendar className="w-3 h-3" /> {item.years}
-                        </span>
-                        <span className="flex items-center gap-1 bg-white/5 px-2 py-1 rounded-full border border-white/5">
-                            <MapPin className="w-3 h-3" /> {item.location}
-                        </span>
-                    </div>
-
-                    {item.skills && (
-                        <div className={cn(
-                            "flex flex-wrap gap-2",
-                            // Mobile: always left, Desktop: alternating
-                            "justify-start",
-                            isEven ? "md:justify-end" : "md:justify-start"
-                        )}>
-                            <div className="flex items-center gap-1 text-xs font-semibold text-primary">
-                                <Award className="w-3 h-3" />
-                                <span>{item.skills}</span>
-                            </div>
-                        </div>
-                    )}
-                </div>
-            </div>
-
-            {/* Spacer for the other side - only on desktop */}
-            <div className="hidden md:block md:w-[calc(50%-2rem)]" />
-        </motion.div>
-    )
-}
-
 export function Education() {
-    const { mode } = usePerspective()
+    const now = currentMonth()
 
     return (
-        <section id="education" className="relative min-h-screen py-32 overflow-hidden">
-            <InViewport rootMargin="400px" className="absolute inset-0 w-full h-full">
-                <EducationCanvas />
-            </InViewport>
+        <section id="education" className="relative py-24 md:py-32 bg-background">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <SectionHeader
+                    index="06"
+                    label="Origin"
+                    title="Where it started"
+                    subtitle={{
+                        dev: "The foundation behind the engineering: informatics, systems and a lot of late-night builds.",
+                        pm: "The foundation behind the product thinking: structured problem solving before shipping.",
+                    }}
+                />
 
-            <div className="relative max-w-5xl mx-auto px-6 z-10">
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    className="text-center mb-20"
-                >
-                    <h2 className="text-4xl md:text-6xl font-black mb-6 tracking-tight">
-                        Academic <span className={cn(
-                            "text-transparent bg-clip-text bg-linear-to-r",
-                            mode === "pm" ? "from-purple-400 to-pink-600" : "from-cyan-400 to-blue-600"
-                        )}>Journey</span>
-                    </h2>
-                    <p className="text-lg text-muted-foreground max-w-2xl mx-auto transition-all">
-                        {mode === "pm"
-                            ? "The educational foundation that powers my strategic thinking and systematic approach to problem solving."
-                            : "The educational foundation that powers my engineering mindset and technical versatility."}
-                    </p>
-                </motion.div>
-
-                <div className="relative">
-                    {/* Timeline Line */}
-                    <div className={cn(
-                        "absolute left-1/2 top-0 bottom-0 w-px bg-linear-to-b from-transparent to-transparent -translate-x-1/2 md:block hidden",
-                        mode === "pm" ? "via-purple-500/50" : "via-cyan-500/50"
-                    )} />
-
-                    <div className="space-y-12">
-                        {educationData.map((item, index) => (
-                            <EducationCard key={index} item={item} index={index} mode={mode} />
-                        ))}
-                    </div>
-                </div>
+                <ol className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                    {educationData.map((item, index) => {
+                        const base = parseLocation(item.location)
+                        const studying = !item.to
+                        const years = item.from ? (item.to?.year ?? now.y) - item.from : 0
+                        return (
+                            <li key={item.school} className="flex">
+                                <Pass
+                                    className="w-full"
+                                    serial={String(index + 1).padStart(2, "0")}
+                                    kicker={item.award}
+                                    title={item.school}
+                                    status={studying ? "in-flight" : "landed"}
+                                    from={item.from ? String(item.from) : undefined}
+                                    to={studying ? "NOW" : item.to!.label}
+                                    duration={years ? formatSpan(years * 12) : undefined}
+                                    routeLabel={studying ? `${item.from} to now` : `Graduated ${item.to!.spoken}`}
+                                    fields={[
+                                        { label: "Base", value: base ? `${base.code} · ${base.city}` : "—", title: item.location },
+                                        { label: "Field", value: item.field },
+                                        { label: "Status", value: studying ? "Studying" : "Graduated" },
+                                    ]}
+                                    tags={item.tags}
+                                >
+                                    <p className="text-sm leading-relaxed text-muted-foreground">{item.degree}</p>
+                                </Pass>
+                            </li>
+                        )
+                    })}
+                </ol>
             </div>
         </section>
     )

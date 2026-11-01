@@ -74,9 +74,9 @@ export function CodingStatusWidget() {
 
     const icon = () => {
         switch (latestEvent.type) {
-            case "PushEvent": return <GitCommit className="w-4 h-4 text-emerald-400" />
-            case "PullRequestEvent": return <GitPullRequest className="w-4 h-4 text-emerald-400" />
-            default: return <GitBranch className="w-4 h-4 text-emerald-400" />
+            case "PushEvent": return <GitCommit className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
+            case "PullRequestEvent": return <GitPullRequest className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
+            default: return <GitBranch className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
         }
     }
 
@@ -85,24 +85,23 @@ export function CodingStatusWidget() {
             href={`https://github.com/${latestEvent.repo.name}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="fixed bottom-4 left-4 z-40 hidden lg:flex items-center gap-3 p-3 rounded-xl bg-black/50 dark:bg-zinc-900/50 backdrop-blur-md border border-white/10 hover:border-emerald-500/50 hover:bg-black/80 transition-all group shadow-2xl"
+            className="fixed bottom-4 left-4 z-40 hidden lg:flex items-center gap-3 p-3 rounded-xl bg-card/95 border border-border hover:border-(--signal)/60 transition-colors group shadow-lg"
         >
-            <div className="relative flex items-center justify-center p-2 rounded-lg bg-emerald-500/10 group-hover:bg-emerald-500/20 transition-colors">
+            <div className="relative flex items-center justify-center p-2 rounded-lg bg-muted transition-colors">
                 {icon()}
                 <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
                 </span>
             </div>
             <div className="flex flex-col">
                 <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-emerald-400 flex items-center gap-1 uppercase tracking-wider">
+                    <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 flex items-center gap-1 uppercase tracking-wider">
                         <Activity className="w-3 h-3" />
                         Live Status
                     </span>
                     <span className="text-[10px] text-muted-foreground/80 font-mono tracking-tighter">({timeAgo(latestEvent.created_at)})</span>
                 </div>
-                <div className="text-sm font-medium text-foreground mt-0.5 group-hover:text-emerald-300 transition-colors line-clamp-1 max-w-[200px]">
+                <div className="text-sm font-medium text-foreground mt-0.5 group-hover:text-(--signal) transition-colors line-clamp-1 max-w-[200px]">
                     {actionText()} <span className="font-bold">{latestEvent.repo.name.split("/")[1]}</span>
                 </div>
             </div>

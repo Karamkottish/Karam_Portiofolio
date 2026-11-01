@@ -1,125 +1,100 @@
-"use client"
+import { ArrowRight, Download } from "lucide-react"
+import { DepartureBoard } from "@/components/ui/DepartureBoard"
+import { departures } from "@/data/departures"
+import { profiles } from "@/data/contact"
+import { formatDate } from "@/lib/utils"
 
-import { motion } from "framer-motion"
-import dynamic from "next/dynamic"
-import { InViewport } from "@/components/canvas/InViewport"
-import { cn } from "@/lib/utils"
-import { ArrowDown, Download } from "lucide-react"
-import { usePerspective } from "@/components/PerspectiveProvider"
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH || ""
 
-const HeroCanvas = dynamic(() => import("@/components/canvas/HeroCanvas"), { ssr: false })
+// The same proof the board shows, for search engines and AI assistants
+const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+        {
+            "@type": "Person",
+            "@id": "#karam-kottish",
+            name: "Karam Kottish",
+            jobTitle: "Full-Stack Software Engineer & Product Manager",
+            knowsAbout: ["Flutter", "React Native", "Next.js", "FastAPI", "Product management"],
+            sameAs: profiles.map((profile) => profile.href),
+        },
+        ...departures.map((departure) => ({
+            "@type": "CreativeWork",
+            name: departure.product,
+            dateCreated: departure.year,
+            creator: { "@id": "#karam-kottish" },
+            keywords: [...departure.dev.stack, ...departure.dev.platform].join(", "),
+            ...(departure.liveUrl && { url: departure.liveUrl }),
+        })),
+    ],
+}
 
 export function Hero() {
-    const { mode } = usePerspective()
+    // Static export: this is the build (deploy) time
+    const deployedAt = new Date()
 
     return (
-        <section id="hero" className="relative h-screen w-full flex items-center justify-center overflow-hidden bg-background">
-            {/* 3D Background */}
-            <InViewport once rootMargin="600px" className="absolute inset-0 w-full h-full z-0 opacity-80 dark:opacity-60">
-                <HeroCanvas />
-            </InViewport>
+        <section id="hero" className="relative min-h-svh w-full flex items-center bg-background pt-28 pb-16 lg:pt-24">
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
 
-            {/* Content Overlay */}
-            <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.2 }}
-                >
-                    <h2 className="text-sm md:text-lg font-medium tracking-wide text-primary/80 uppercase mb-4">
-                        Welcome to my portfolio
-                    </h2>
-                </motion.div>
+            {/* Side by side only from xl: below that the board's columns get too narrow and it stacks under the copy */}
+            <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid gap-12 xl:gap-14 xl:grid-cols-[minmax(0,0.85fr)_minmax(0,1.35fr)] items-center">
+                <div>
+                    <p className="flex items-center gap-2 mb-6 font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">
+                        <span className="size-2 rounded-full bg-emerald-500" aria-hidden="true" />
+                        Available for full-time &amp; freelance
+                    </p>
 
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.8, delay: 0.4 }}
-                >
-                    <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter mb-6 text-foreground">
-                        Karam <span className="text-transparent bg-clip-text bg-linear-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">Kottish</span>
+                    <h1 className="font-display text-7xl sm:text-8xl font-black uppercase tracking-tight leading-[0.84] text-foreground">
+                        <span className="block">Karam</span>{" "}
+                        <span className="block">Kottish</span>
                     </h1>
-                </motion.div>
 
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.6 }}
-                >
-                    <div className="text-xl md:text-2xl text-muted-foreground font-light max-w-3xl mx-auto mb-12 space-y-6">
-                        <p>
-                            {mode === "pm"
-                                ? <span className="text-purple-600 dark:text-purple-400 font-bold">Product Manager</span>
-                                : <span className="text-blue-600 dark:text-blue-400 font-bold">Full-Stack Software Engineer</span>}
-                            {" "}& {mode === "pm" ? "Technical Lead" : "Product Manager"} with <span className="text-foreground font-semibold border-b-2 border-primary/20">3+ years</span> of experience.
-                        </p>
-                        <p className="text-base md:text-lg opacity-90 max-w-2xl mx-auto leading-relaxed h-[60px] md:h-auto">
-                            {mode === "pm"
-                                ? "I turn business goals into shipped roadmaps — leading discovery, specs, and cross-functional delivery. My last launch drove a 32% lift in user engagement across a cross-platform pet-care platform."
-                                : "I build and ship scalable web and mobile products end-to-end — Flutter, React Native, Next.js and FastAPI. I've led frontend teams, tuned enterprise apps for performance and accessibility, and delivered 10+ products to production."}
-                        </p>
-
-                        <div className="flex flex-wrap justify-center gap-3 pt-4">
-                            {(mode === "pm"
-                                ? ["Roadmap Planning", "Agile Execution", "Data-Driven Decisions", "Technical Leadership", "Stakeholder Comm", "User Research"]
-                                : ["Flutter", "React Native", "PHP", "FastAPI", "Next.js", "Three.js", "React"]
-                            ).map((item, i) => (
-                                <motion.span
-                                    key={`${mode}-${item}`}
-                                    initial={{ opacity: 0, scale: 0.8, y: 10 }}
-                                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                                    transition={{ delay: 0.2 + (i * 0.1), type: "spring" }}
-                                    className={cn(
-                                        "px-4 py-1.5 rounded-full border text-foreground font-medium text-sm transition-all cursor-default",
-                                        mode === "pm"
-                                            ? "bg-purple-500/10 border-purple-500/20 hover:border-purple-500/40 shadow-[0_0_15px_-3px_rgba(168,85,247,0.1)] hover:shadow-[0_0_20px_-3px_rgba(168,85,247,0.3)]"
-                                            : "bg-blue-500/10 border-blue-500/20 hover:border-blue-500/40 shadow-[0_0_15px_-3px_rgba(59,130,246,0.1)] hover:shadow-[0_0_20px_-3px_rgba(59,130,246,0.3)]"
-                                    )}
-                                >
-                                    {item}
-                                </motion.span>
-                            ))}
-                        </div>
-                    </div>
-                </motion.div>
-
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.8 }}
-                    className="flex flex-col sm:flex-row gap-4 justify-center items-center"
-                >
-                    <a
-                        href="#projects"
-                        className="px-8 py-4 rounded-full bg-foreground text-background font-bold hover:scale-105 transition-transform shadow-lg hover:shadow-xl"
-                    >
-                        View Work
-                    </a>
-                    <a
-                        href="/Karam_Portiofolio/Cv/CV10.pdf"
-                        download="Karam_Kottish_CV.pdf"
-                        className="group relative px-8 py-4 rounded-full border border-foreground/10 bg-background/30 backdrop-blur-md overflow-hidden transition-all duration-300 hover:scale-105 hover:border-foreground/20 hover:shadow-[0_0_40px_-10px_rgba(59,130,246,0.5)] dark:hover:shadow-[0_0_40px_-10px_rgba(59,130,246,0.3)]"
-                    >
-                        <div className="absolute inset-0 bg-linear-to-r from-blue-500/10 via-purple-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                        <span className="relative flex items-center gap-2 text-foreground font-bold tracking-wide">
-                            <Download className="w-5 h-5 group-hover:animate-bounce" />
-                            DOWNLOAD CV
+                    <p className="persp-swap mt-6 text-xl md:text-2xl font-semibold tracking-tight text-foreground">
+                        <span className="persp-dev">
+                            <span className="text-(--accent-dev)">Full-stack engineer</span>{" "}
+                            <span className="font-normal text-muted-foreground">who also runs product.</span>
                         </span>
-                    </a>
-                </motion.div>
+                        <span className="persp-pm">
+                            <span className="text-(--accent-pm)">Product manager</span>{" "}
+                            <span className="font-normal text-muted-foreground">who still ships the code.</span>
+                        </span>
+                    </p>
+
+                    <p className="persp-swap mt-4 max-w-xl text-base md:text-lg leading-relaxed text-muted-foreground">
+                        <span className="persp-dev">
+                            I build web and mobile products end-to-end in Flutter, React Native, Next.js and FastAPI, and I&apos;ve taken 10+ of them to production.
+                        </span>
+                        <span className="persp-pm">
+                            I turn business goals into shipped roadmaps: discovery, specs and cross-functional delivery. My last launch lifted engagement 32%.
+                        </span>
+                    </p>
+
+                    <div className="mt-8 flex flex-wrap items-center gap-3">
+                        <a
+                            href="#projects"
+                            className="group inline-flex items-center gap-2 h-12 px-6 rounded-full bg-foreground text-background font-semibold transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                        >
+                            View work
+                            <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+                        </a>
+                        <a
+                            href={`${basePath}/Cv/CV10.pdf`}
+                            download="Karam_Kottish_CV.pdf"
+                            className="inline-flex items-center gap-2 h-12 px-6 rounded-full border border-border text-foreground font-semibold transition-colors hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                        >
+                            <Download className="w-4 h-4" aria-hidden="true" />
+                            Download CV
+                        </a>
+                    </div>
+
+                    <p className="mt-8 font-mono text-xs text-muted-foreground">
+                        3+ years shipping · Last deploy <time dateTime={deployedAt.toISOString()}>{formatDate(deployedAt)}</time>
+                    </p>
+                </div>
+
+                <DepartureBoard departures={departures} />
             </div>
-
-            {/* Scroll Indicator */}
-            <motion.div
-                className="absolute bottom-10 left-1/2 transform -translate-x-1/2 z-10"
-                animate={{ y: [0, 10, 0] }}
-                transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
-            >
-                <ArrowDown className="w-8 h-8 text-muted-foreground opacity-50" />
-            </motion.div>
-
-            {/* Gradient Overlay for better text readability if needed */}
-            <div className="absolute inset-0 bg-linear-to-b from-transparent via-transparent to-background z-0 pointer-events-none" />
         </section>
     )
 }
