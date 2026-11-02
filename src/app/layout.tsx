@@ -6,6 +6,7 @@ import { PerspectiveProvider } from "@/components/PerspectiveProvider";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { DebugProvider } from "@/components/DebugProvider";
+import { Analytics } from "@/components/Analytics";
 import { DeferredOverlays } from "@/components/ui/DeferredOverlays";
 
 const geistSans = Geist({
@@ -80,6 +81,7 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: perspectiveScript }} />
       </head>
       <body className="antialiased bg-background text-foreground">
+        <Analytics />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

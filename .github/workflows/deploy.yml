@@ -29,6 +29,9 @@ jobs:
         run: npm ci --legacy-peer-deps
       - name: Build
         run: npm run build
+        env:
+          # Public Google Analytics 4 Measurement ID (it is visible in the page source anyway)
+          NEXT_PUBLIC_GA_ID: G-27V12R2Y6N
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
