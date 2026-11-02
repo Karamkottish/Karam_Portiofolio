@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { Phone, Mail, Copy, Check, ArrowUpRight } from "lucide-react"
 import { EMAIL, profiles } from "@/data/contact"
+import { Logo } from "@/components/ui/Logo"
 
 // WhatsApp Icon Component (Custom SVG for better brand accuracy)
 function WhatsAppIcon({ className }: { className?: string }) {
@@ -42,17 +43,11 @@ export function Footer() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="board rounded-2xl p-3 sm:p-4 font-mono">
                     <div className="grid gap-6 p-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)] lg:items-center">
-                        <div className="flex items-center gap-4">
-                            <img
-                                src="/Karam_Portiofolio/images/karam-logo.png"
-                                alt="Karam Kottish Logo"
-                                width={64}
-                                height={64}
-                                loading="lazy"
-                                decoding="async"
-                                className="h-14 w-auto rounded-md object-contain"
-                            />
-                            <p className="font-sans text-sm leading-relaxed text-(--flap-ink)">
+                        <div className="space-y-4">
+                            <a href="#hero" aria-label="Karam Kottish, back to top" className="inline-block rounded-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring">
+                                <Logo size="lg" />
+                            </a>
+                            <p className="max-w-md font-sans text-sm leading-relaxed text-(--flap-ink)">
                                 Full-stack engineer and product manager. I build web and mobile products with Flutter, React Native, Next.js and FastAPI.
                             </p>
                         </div>

@@ -119,6 +119,12 @@
 
 :root[data-perspective="pm"] {
   --signal: var(--accent-pm);
+  --logo-dot: #ff7a59;
+}
+
+/* The logo's status dot stays bright on its dark tile in both themes */
+:root {
+  --logo-dot: #f4c430;
 }
 
 body {
@@ -197,6 +203,12 @@ body.debug-mode-active #debug-console-wrapper div {
   }
 }
 
+@keyframes logo-clack {
+  50% {
+    transform: scaleY(0);
+  }
+}
+
 /* Board row -> project card morph (BoardingTransitions) */
 ::view-transition-group(departure) {
   animation-duration: 0.6s;
@@ -228,6 +240,30 @@ body.debug-mode-active #debug-console-wrapper div {
   transform: translateY(0.4em);
   visibility: hidden;
   transition-delay: 0s, 0s, 0.45s;
+}
+
+/* ---------- Logo: the split-flap K ---------- */
+.logo-mark .logo-tile-top { fill: #2a2620; }
+.logo-mark .logo-tile { fill: #17140f; }
+.logo-mark .logo-ink { fill: #f5f2ea; }
+.logo-mark .logo-dot { fill: var(--logo-dot); transition: fill 0.3s ease; }
+
+/* Lifted a step in dark mode so the tile separates from the near-black page */
+.dark .logo-mark .logo-tile-top { fill: #38322a; }
+.dark .logo-mark .logo-tile { fill: #26221c; }
+.dark .logo-mark .logo-ink { fill: #f3eee4; }
+
+.logo-flap {
+  transform-box: view-box;
+  transform-origin: 32px 31px;
+}
+
+/* Hovering or focusing the logo makes the top flap clack once */
+@media (prefers-reduced-motion: no-preference) {
+  a:hover > .logo .logo-flap,
+  a:focus-visible > .logo .logo-flap {
+    animation: logo-clack 420ms cubic-bezier(0.55, 0, 0.45, 1);
+  }
 }
 
 /* ---------- Board tray (departures, toolchain, arrivals, check-in) ---------- */
@@ -484,8 +520,9 @@ body.debug-mode-active #debug-console-wrapper div {
   background: var(--note);
   color: var(--flap-ink);
   box-shadow: inset 2px 0 0 var(--note-edge);
+  /* Notes are prose: the sans face reads better and fits more than the board's mono */
+  font-family: var(--font-sans), sans-serif;
   font-size: 0.75rem;
-  letter-spacing: 0.02em;
   pointer-events: none;
   visibility: hidden;
   transform-origin: 50% 0;
@@ -503,6 +540,7 @@ body.debug-mode-active #debug-console-wrapper div {
 
 .dep-note-label {
   margin-right: 0.6em;
+  font-family: var(--font-mono), monospace;
   font-size: 0.625rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;

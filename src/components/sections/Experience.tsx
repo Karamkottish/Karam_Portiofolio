@@ -72,7 +72,7 @@ const experiences: ExperienceItem[] = [
         roles: [
             {
                 title: "Full Stack Engineer",
-                period: "Jan 2026 - Present",
+                period: "Jan 2026 - Nov 2026",
                 location: "Bengaluru - Remote"
             },
             {
@@ -112,7 +112,7 @@ const experiences: ExperienceItem[] = [
         roles: [
             {
                 title: "Frontend Web Developer Intern",
-                period: "Sep 2025 - Present",
+                period: "Sep 2025 - Nov 2026",
                 location: "Damascus - Remote",
                 description: "Passionate about creating user-friendly, responsive, and visually appealing web applications.",
                 skills: ["GitHub", "React.js", "Tailwind CSS"]

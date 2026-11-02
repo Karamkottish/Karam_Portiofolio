@@ -26,7 +26,7 @@ const bigShoulders = Big_Shoulders({
 });
 
 // metadata.icons URLs are not prefixed with basePath, so add it for GitHub Pages
-const logoUrl = `${process.env.NEXT_PUBLIC_BASE_PATH || ""}/images/karam-logo.png`
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH || ""
 
 // Restores the saved perspective before first paint so CSS-driven UI never flashes the wrong mode
 const perspectiveScript = `try{document.documentElement.dataset.perspective=localStorage.getItem("perspective_mode")==="pm"?"pm":"dev"}catch(e){}`
@@ -55,10 +55,10 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
   },
+  // The split-flap K as SVG; iOS needs a PNG for the home-screen icon
   icons: {
-    icon: logoUrl,
-    shortcut: logoUrl,
-    apple: logoUrl,
+    icon: [{ url: `${basePath}/images/logo-mark.svg`, type: "image/svg+xml" }],
+    apple: `${basePath}/images/apple-touch-icon.png`,
   },
 };
 
@@ -68,13 +68,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" data-perspective="dev" suppressHydrationWarning>
+    // The font variables live on <html> because the theme's --font-* tokens are resolved on :root;
+    // on <body> they were undefined there and every font fell back to the system stack
+    <html
+      lang="en"
+      data-perspective="dev"
+      className={`${geistSans.variable} ${geistMono.variable} ${bigShoulders.variable}`}
+      suppressHydrationWarning
+    >
       <head>
         <script dangerouslySetInnerHTML={{ __html: perspectiveScript }} />
       </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} ${bigShoulders.variable} antialiased bg-background text-foreground`}
-      >
+      <body className="antialiased bg-background text-foreground">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

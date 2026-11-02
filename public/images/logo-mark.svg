@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="256" height="256" role="img" aria-labelledby="t">
+  <title id="t">Karam Kottish</title>
+  <g transform="translate(0 0)">
+    <path d="M2 31V16A14 14 0 0 1 16 2H48A14 14 0 0 1 62 16V31Z" fill="#2a2620"/>
+    <path d="M2 33H62V48A14 14 0 0 1 48 62H16A14 14 0 0 1 2 48Z" fill="#17140f"/>
+    <path d="M17 15H25V28L35.5 15H45L32.39 31H17Z" fill="#f5f2ea"/>
+    <path d="M17 33H33.16L45.5 49H36L25 35.5V49H17Z" fill="#f5f2ea"/>
+    <circle cx="51" cy="13" r="3" fill="#f4c430"/>
+  </g>
+</svg>

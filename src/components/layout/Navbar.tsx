@@ -7,6 +7,7 @@ import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { motion, AnimatePresence } from "framer-motion"
 import { usePerspective } from "@/components/PerspectiveProvider"
+import { Logo } from "@/components/ui/Logo"
 
 
 const navLinks = [
@@ -48,15 +49,8 @@ export function Navbar() {
                 <div className="flex items-center justify-between h-16">
                     <div className="shrink-0">
 
-                        <Link href="/" className="hover:opacity-80 transition-opacity">
-                            <img
-                                src="/Karam_Portiofolio/images/karam-logo.png"
-                                alt="Karam Kottish Logo"
-                                width={40}
-                                height={40}
-                                decoding="async"
-                                className="h-8 md:h-10 w-auto object-contain"
-                            />
+                        <Link href="/" aria-label="Karam Kottish, home" className="block rounded-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring">
+                            <Logo />
                         </Link>
                     </div>
 
