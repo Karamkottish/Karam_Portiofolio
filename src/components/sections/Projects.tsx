@@ -1,9 +1,9 @@
 "use client"
 
-import { useRef, useState, useEffect } from "react"
+import { useRef, useState, useEffect, useCallback } from "react"
 import { createPortal } from "react-dom"
 import { motion, AnimatePresence } from "framer-motion"
-import { Github, ExternalLink, Folders, Smartphone, Globe, MessageSquare, Leaf, Rocket, PlayCircle, X, Building2, Car } from "lucide-react"
+import { Github, ExternalLink, Folders, Smartphone, Globe, MessageSquare, Leaf, Rocket, PlayCircle, X, Building2, Car, ChevronLeft, ChevronRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { usePerspective } from "@/components/PerspectiveProvider"
 import { SectionHeader } from "@/components/ui/SectionHeader"
@@ -27,6 +27,12 @@ type TechItem = {
     icon: React.ComponentType<any>
 }
 
+type ProjectImage = {
+    src: string
+    /** Shown as the slide's caption and read to screen readers */
+    alt: string
+}
+
 type Project = {
     title: string
     role: string
@@ -41,6 +47,16 @@ type Project = {
     pmDescription?: string
     pmRole?: string
     video?: string
+    /** Up to three 16:9 screenshots, scrolled inside the card */
+    images?: ProjectImage[]
+}
+
+// Screenshots live in public/images/projects/<slug>/1.webp, 2.webp, … at 1600x900
+function screenshots(slug: string, captions: string[]): ProjectImage[] {
+    return captions.map((alt, i) => ({
+        src: `${process.env.NEXT_PUBLIC_BASE_PATH || ""}/images/projects/${slug}/${i + 1}.webp`,
+        alt,
+    }))
 }
 
 // Icon Mapping Helper
@@ -91,7 +107,11 @@ const projects: Project[] = [
         ],
         icon: <Building2 className="w-10 h-10" />,
         ios: samaBtu?.url ?? SAMA_BTU_APP_STORE_URL,
-        website: "https://sama-tech.ae/btu/"
+        website: "https://sama-tech.ae/btu/",
+        images: screenshots("sama-btu", [
+            "Admin dashboard: electricity use per apartment, unpaid invoices and payment status for the billing cycle",
+            "Tenant iOS app: apartment summary, this month's kWh and invoices with their status",
+        ])
     },
     {
         title: "Kol Shei",
@@ -108,7 +128,12 @@ const projects: Project[] = [
             { name: "Cloudflare", icon: SiCloudflare }
         ],
         icon: <Car className="w-10 h-10" />,
-        website: "https://kol-shei.com/"
+        website: "https://kol-shei.com/",
+        images: screenshots("kol-shei", [
+            "Storefront: a scroll-driven tour of chassis, lighting and engine parts",
+            "VIN decoder: every group of the 17 characters is read before an order reaches the factory",
+            "Four-stage tracker, from deposit paid in China to ready for pickup in Damascus",
+        ])
     },
     {
         title: "Paws Pal Connect",
@@ -142,7 +167,12 @@ const projects: Project[] = [
             { name: "Physics", icon: MdArchitecture }
         ],
         icon: <Rocket className="w-10 h-10" />,
-        github: "https://github.com/Karamkottish/Solarsystem3D"
+        github: "https://github.com/Karamkottish/Solarsystem3D",
+        images: screenshots("cosmic-journey", [
+            "Scroll-driven tour that opens on the Sun, with every planet on its orbit",
+            "The camera flies to each planet in turn: Saturn and its ring system",
+            "Mission Control panel with live NASA feeds and mission updates",
+        ])
     },
     {
         title: "BustaniPlus",
@@ -157,7 +187,12 @@ const projects: Project[] = [
         ],
         icon: <Leaf className="w-10 h-10" />,
         github: "https://github.com/Karamkottish/BustaniPlus",
-        video: `${process.env.NEXT_PUBLIC_BASE_PATH || ""}/Bustaniapp-video.mp4`
+        video: `${process.env.NEXT_PUBLIC_BASE_PATH || ""}/Bustaniapp-video.mp4`,
+        images: screenshots("bustaniplus", [
+            "Visitors find farms on a map, browse each farm's market and activities, and book a visit date",
+            "AR farm tour, a farm-learning game and a stamp passport of rewards",
+            "Farmer side: weather and farm overview, an AI crop scanner and smart irrigation",
+        ])
     },
     {
         title: "Karam University",
@@ -229,7 +264,12 @@ const projects: Project[] = [
             { name: "Firebase", icon: SiFirebase }
         ],
         icon: <Smartphone className="w-10 h-10" />,
-        github: "https://gitlab.com/revonix1/revonix-frontend"
+        github: "https://gitlab.com/revonix1/revonix-frontend",
+        images: screenshots("revonix", [
+            "Clients sign in, browse trades and open a worker's profile with rating and location",
+            "Ordering: pin the address on a map, pay through MTN Cash, then rate the job",
+            "Worker side: price or reject incoming orders and show past jobs in a gallery",
+        ])
     },
     {
         title: "Shein Replica App",
@@ -256,7 +296,11 @@ const projects: Project[] = [
             { name: "Analytics", icon: TbDatabase }
         ],
         icon: <Smartphone className="w-10 h-10" />,
-        github: "https://github.com/Karamkottish/Change-ASPU/tree/flutter"
+        github: "https://github.com/Karamkottish/Change-ASPU/tree/flutter",
+        images: screenshots("change", [
+            "Onboarding that introduces volunteers to the app",
+            "Company use cases: post opportunities, accept or remove volunteers, review history",
+        ])
     }
 ]
 
@@ -281,11 +325,170 @@ function CardLink({ href, label, children }: { href: string; label: string; chil
     )
 }
 
+function slideNumber(n: number) {
+    return String(n).padStart(2, "0")
+}
+
+function scrollBehavior(): ScrollBehavior {
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"
+}
+
+// A row of 16:9 slides that scrolls sideways inside the card; a slide opens the lightbox
+function ProjectGallery({ title, images, onOpen }: { title: string; images: ProjectImage[]; onOpen: (index: number) => void }) {
+    const trackRef = useRef<HTMLDivElement>(null)
+    const [active, setActive] = useState(0)
+
+    function handleScroll() {
+        const track = trackRef.current
+        if (track) setActive(Math.round(track.scrollLeft / track.clientWidth))
+    }
+
+    function goTo(index: number) {
+        const track = trackRef.current
+        if (track) track.scrollTo({ left: index * track.clientWidth, behavior: scrollBehavior() })
+    }
+
+    const navButton = "rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-(--signal) focus-visible:outline-2 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-30"
+
+    return (
+        <div className="relative z-10 border-b border-border">
+            <div
+                ref={trackRef}
+                onScroll={handleScroll}
+                tabIndex={0}
+                role="region"
+                aria-roledescription="carousel"
+                aria-label={`${title} screenshots`}
+                className="flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain bg-muted [scrollbar-width:none] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring [&::-webkit-scrollbar]:hidden"
+            >
+                {images.map((image, i) => (
+                    <button
+                        key={image.src}
+                        type="button"
+                        onClick={() => onOpen(i)}
+                        aria-label={`Enlarge screenshot ${i + 1} of ${images.length}: ${image.alt}`}
+                        className="aspect-video w-full shrink-0 snap-center cursor-zoom-in"
+                    >
+                        <img
+                            src={image.src}
+                            alt=""
+                            width={1600}
+                            height={900}
+                            loading="lazy"
+                            decoding="async"
+                            draggable={false}
+                            className="size-full object-cover"
+                        />
+                    </button>
+                ))}
+            </div>
+            <div className="flex items-center gap-3 px-6 py-2.5">
+                <p className="shrink-0 font-mono text-[11px] tracking-[0.18em] text-muted-foreground tabular-nums">
+                    <span className="text-(--signal)">{slideNumber(active + 1)}</span>/{slideNumber(images.length)}
+                </p>
+                <p className="min-w-0 flex-1 text-xs leading-snug text-muted-foreground line-clamp-2">
+                    {images[active]?.alt}
+                </p>
+                {images.length > 1 && (
+                    <div className="-mr-1.5 flex shrink-0">
+                        <button type="button" onClick={() => goTo(active - 1)} disabled={active === 0} aria-label="Previous screenshot" className={navButton}>
+                            <ChevronLeft className="size-4" />
+                        </button>
+                        <button type="button" onClick={() => goTo(active + 1)} disabled={active === images.length - 1} aria-label="Next screenshot" className={navButton}>
+                            <ChevronRight className="size-4" />
+                        </button>
+                    </div>
+                )}
+            </div>
+        </div>
+    )
+}
+
+// Full-size view of one screenshot; arrow keys step through, Escape closes
+function ImageLightbox({ title, images, index, onIndex, onClose }: {
+    title: string
+    images: ProjectImage[]
+    index: number
+    onIndex: (index: number) => void
+    onClose: () => void
+}) {
+    const count = images.length
+    const step = useCallback((delta: number) => onIndex((index + delta + count) % count), [index, count, onIndex])
+
+    useEffect(() => {
+        function handleKey(e: KeyboardEvent) {
+            if (e.key === "Escape") onClose()
+            else if (e.key === "ArrowRight") step(1)
+            else if (e.key === "ArrowLeft") step(-1)
+        }
+        window.addEventListener("keydown", handleKey)
+        return () => window.removeEventListener("keydown", handleKey)
+    }, [onClose, step])
+
+    const image = images[index]
+    const navButton = "shrink-0 rounded-full bg-white/10 p-2 text-white/70 transition-colors hover:bg-white/20 hover:text-white focus-visible:outline-2 focus-visible:outline-white"
+
+    return (
+        <motion.div
+            role="dialog"
+            aria-modal="true"
+            aria-label={`${title} screenshots`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-100 flex items-center justify-center bg-black/85 p-4 sm:p-8"
+            onClick={onClose}
+        >
+            <button
+                aria-label="Close screenshots"
+                autoFocus
+                className="absolute top-6 right-6 z-101 rounded-full bg-white/10 p-2 text-white/70 transition-colors hover:bg-white/20 hover:text-white"
+                onClick={onClose}
+            >
+                <X className="w-6 h-6" />
+            </button>
+            <motion.figure
+                initial={{ scale: 0.95, opacity: 0, y: 20 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.95, opacity: 0, y: 20 }}
+                className="w-full max-w-[min(72rem,calc(78vh*16/9))]"
+                onClick={(e) => e.stopPropagation()}
+            >
+                <img
+                    src={image.src}
+                    alt={image.alt}
+                    width={1600}
+                    height={900}
+                    className="aspect-video w-full rounded-2xl border border-white/10 bg-card object-contain"
+                />
+                <figcaption className="mt-4 flex items-center gap-4 text-sm text-white/80">
+                    <span className="shrink-0 font-mono text-xs tracking-[0.18em] text-white/50 tabular-nums">
+                        {slideNumber(index + 1)}/{slideNumber(count)}
+                    </span>
+                    <span className="min-w-0 flex-1">{image.alt}</span>
+                    {count > 1 && (
+                        <span className="flex shrink-0 gap-2">
+                            <button type="button" onClick={() => step(-1)} aria-label="Previous screenshot" className={navButton}>
+                                <ChevronLeft className="size-5" />
+                            </button>
+                            <button type="button" onClick={() => step(1)} aria-label="Next screenshot" className={navButton}>
+                                <ChevronRight className="size-5" />
+                            </button>
+                        </span>
+                    )}
+                </figcaption>
+            </motion.figure>
+        </motion.div>
+    )
+}
+
 function ProjectCard({ project, index, mode }: { project: Project; index: number; mode: "pm" | "dev" }) {
     const videoRef = useRef<HTMLVideoElement>(null)
     const [isHovered, setIsHovered] = useState(false)
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const [zoomedImage, setZoomedImage] = useState<number | null>(null)
     const [mounted, setMounted] = useState(false)
+    const closeLightbox = useCallback(() => setZoomedImage(null), [])
 
     useEffect(() => {
         setMounted(true)
@@ -351,6 +554,16 @@ function ProjectCard({ project, index, mode }: { project: Project; index: number
                             </motion.div>
                         </motion.div>
                     )}
+                    {zoomedImage !== null && project.images && (
+                        <ImageLightbox
+                            key="lightbox"
+                            title={project.title}
+                            images={project.images}
+                            index={zoomedImage}
+                            onIndex={setZoomedImage}
+                            onClose={closeLightbox}
+                        />
+                    )}
                 </AnimatePresence>,
                 document.body
             )}
@@ -380,7 +593,8 @@ function ProjectCard({ project, index, mode }: { project: Project; index: number
                     <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
                         <span className="text-(--signal)">{String(index + 1).padStart(2, "0")}</span> · {project.year}
                     </p>
-                    <div className="-mr-2 flex items-center">
+                    {/* Kept at icon-button height so cards without links line up with the rest */}
+                    <div className="-mr-2 flex min-h-8.5 items-center">
                         {project.video && (
                             <button
                                 type="button"
@@ -425,6 +639,18 @@ function ProjectCard({ project, index, mode }: { project: Project; index: number
                         )}
                     </div>
                 </header>
+
+                {project.images?.length ? (
+                    <ProjectGallery title={project.title} images={project.images} onOpen={setZoomedImage} />
+                ) : (
+                    // Same footprint as a gallery so cards in a row stay aligned
+                    <div
+                        aria-hidden="true"
+                        className="relative z-10 grid aspect-video place-items-center border-b border-border bg-muted bg-[radial-gradient(hsl(var(--border))_1px,transparent_1px)] [background-size:14px_14px] text-muted-foreground/40 [&_svg]:size-12"
+                    >
+                        {project.icon}
+                    </div>
+                )}
 
                 <div className="relative z-10 flex flex-1 flex-col px-6 pt-5 pb-6">
                     <div className="flex items-center gap-3">
